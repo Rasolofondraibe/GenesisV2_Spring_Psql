@@ -1,0 +1,19 @@
+<table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Nom du livre</th>
+        <th scope="col">Page</th>
+        <th scope="col">Type</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let book of listeBook | async">
+        <td>{{ book.nom_book }}</td>
+        <td>{{ book.page }}</td>
+        <td>{{ book.type }}</td>
+        <td><button type="button" class="btn btn-primary" (click)="deleteBook(book.id)">Delete</button></td>
+        <td><button type="button" class="btn btn-primary" (click)="versUpdate(book.id)">Update</button></td>
+      </tr>
+    </tbody>
+  </table>
+  

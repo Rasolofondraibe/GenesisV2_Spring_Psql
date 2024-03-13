@@ -1,0 +1,40 @@
+import { HttpClient } from "@angular/common/http";
+import { Injectable } from "@angular/core";
+import { [GnomClasse]Model } from "../model/[GnomClasse]Model";
+import { Observable } from "rxjs";
+import { map } from 'rxjs/operators';
+
+
+
+@Injectable({
+    providedIn : 'root'
+})
+export class [GnomClasse]Service{
+    baseUrl = [baseUrl];
+
+    constructor(private http: HttpClient) { }
+
+    getAll(): Observable<[GnomClasse]Model[]> {
+        const url = this.baseUrl+'/tocrud[nomClasse].do';
+        return this.http.get<[GnomClasse]Model[]>(url);
+    }
+
+    create([argumentCreate]): Observable<any> {
+        const url = `${this.baseUrl}/insert[nomClasse].do?[requestParamCreate]`;
+        return this.http.post(url, null);
+    }
+
+    update([argumentUpdate]): Observable<any> {
+        return this.http.post(`${this.baseUrl}/update[nomClasse].do?[requestParamUpdate]`, null);
+    }
+
+    delete([id]:any): Observable<any> {
+        return this.http.post(`${this.baseUrl}/delete[nomClasse].do?[id]=${[id]}`,null);
+    }
+
+    findById(id: number): Observable<[GnomClasse]Model | undefined> {
+        return this.getAll().pipe(
+          map(([nomClasse]s: [GnomClasse]Model[]) => [nomClasse]s.find([nomClasse] => [nomClasse].[id] === id))
+        );
+    }
+}

@@ -1,0 +1,15 @@
+<table class="table">
+    <thead>
+      <tr>
+        [tete]
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let [nomClasse] of liste[GnomClasse] | async">
+        [body]
+        <td><button type="button" class="btn btn-primary" (click)="delete[GnomClasse]([nomClasse].[id])">Delete</button></td>
+        <td><button type="button" class="btn btn-primary" (click)="versUpdate([nomClasse].[id])">Update</button></td>
+      </tr>
+    </tbody>
+  </table>
+   

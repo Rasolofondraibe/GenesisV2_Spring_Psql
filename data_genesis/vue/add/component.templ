@@ -1,0 +1,44 @@
+import { Component } from '@angular/core';
+import { FormBuilder, FormGroup, Validators,ReactiveFormsModule } from '@angular/forms';
+
+import { [GnomClasse]Model } from '../model/[GnomClasse]Model';
+import { [GnomClasse]Service } from '../service/[GnomClasse]Service';
+import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
+[importForeign]
+
+@Component({
+  selector: 'app-add-[nomClasse]',
+  standalone: true,
+  templateUrl: './add-[nomClasse].component.html',
+  styleUrls: ['./add-[nomClasse].component.css'],
+  imports : [CommonModule,ReactiveFormsModule]
+})
+export class Add[GnomClasse]Component {
+  [nomClasse]Form!: FormGroup; // Définir un FormGroup pour gérer le formulaire
+  [attributForeign]
+
+  constructor(private formBuilder: FormBuilder, private [nomClasse]Service: [GnomClasse]Service,private router:Router[constructorForeign]) {
+    this.[nomClasse]Form = this.formBuilder.group({
+      [validator]
+    });
+  }
+
+  [fonctionForeign]
+
+  submit() {
+    if (this.[nomClasse]Form.valid) {
+      [dataDeclaration]
+      this.[nomClasse]Service.create([dataDeclarationArgument]).subscribe({
+        next: (response) => {
+          console.log('Create successful:', response); // Affichez la réponse renvoyée par la méthode create
+          this.router.navigateByUrl(`/liste[GnomClasse]`);
+        },
+        error: (error) => {
+          console.error('Error:', error); // Affichez les éventuelles erreurs
+        }
+      });
+    }
+  }
+}

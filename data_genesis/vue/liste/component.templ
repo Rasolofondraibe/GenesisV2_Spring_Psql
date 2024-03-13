@@ -1,0 +1,47 @@
+import { Component } from '@angular/core';
+import { [GnomClasse]Model } from '../model/[GnomClasse]Model';
+import { [GnomClasse]Service } from '../service/[GnomClasse]Service';
+import { Observable } from 'rxjs';
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+
+@Component({
+  selector: 'app-liste-[nomClasse]',
+  standalone: true,
+  imports: [CommonModule],
+  templateUrl: './liste-[nomClasse].component.html',
+  styleUrl: './liste-[nomClasse].component.css'
+})
+export class Liste[GnomClasse]Component {
+    liste[GnomClasse] !: Observable<[GnomClasse]Model[]>;
+
+    constructor(private [nomClasse]Service : [GnomClasse]Service,private router:Router){
+    }
+  
+    ngOnInit() {
+      this.getAll[GnomClasse]s();
+    }
+
+    getAll[GnomClasse]s() {
+      this.liste[GnomClasse] = this.[nomClasse]Service.getAll(); 
+    }
+
+    delete[GnomClasse](id:number | undefined):void{
+        this.[nomClasse]Service.delete(id).subscribe({
+          next: (response) => {
+            console.log('delete successful:', response); 
+            this.getAll[GnomClasse]s();
+          },
+          error: (error) => {
+            console.error('Error:', error); 
+          }
+        });
+    }
+
+    versUpdate(id:number | undefined):void{
+        this.router.navigateByUrl(`/versUpdate[GnomClasse]/${id}`);
+    }
+
+    
+}

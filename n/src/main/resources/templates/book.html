@@ -1,0 +1,114 @@
+<div class="container-fluid pt-4 px-4" th:fragment="content">
+    <div class="row g-4">
+        <div class="col-sm-12 col-xl-6 offset-3">
+            <div class="bg-secondary rounded h-100 p-4">
+                <h6 class="mb-4">Liste de book</h6>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Id</th><th scope="col">Nom book</th><th scope="col">Page</th><th scope="col">Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each=" e: ${o}">
+                                <td th:text="${e.getId()}"></td><td th:text="${e.getNomBook()}"></td><td th:text="${e.getPage()}"></td><td th:text="${e.getType()}"></td>
+                                <td>
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                        th:data-bs-target="'#modifiermodal'+${e.getId()}">
+                                        <p><i class="bi bi-pencil"></i>Modifier</p>
+                                    </button>
+                                    <div class="modal fade" th:id="'modifiermodal'+${e.getId()}" tabindex="-1"
+                                        aria-labelledby="modifiermodalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <form action="/updatebook.do" method="post">
+                                                    <div class="modal-header">
+                                                        <h1 class="modal-title fs-5" id="modifiermodalLabel">Modifier un
+                                                            book</h1>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                            aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <input type="hidden" name="id" th:value="${e.getId()}">
+                                                        <div class="mb-3">
+    <label for="nomBookinput" class="form-label">NomBook</label>
+    <input type="text" class="form-control" id="nomBookinput"
+        aria-describedby="nomBookhelp" name="nomBook"
+        th:value="${e.getNomBook()}">
+</div>
+<div class="mb-3">
+    <label for="pageinput" class="form-label">Page</label>
+    <input type="number" step="1.0" class="form-control" id="pageinput"
+        aria-describedby="pagehelp" name="page"
+        th:value="${e.getPage()}">
+</div>
+<div class="mb-3">
+    <label for="typeinput" class="form-label">Type</label>
+    <input type="text" class="form-control" id="typeinput"
+        aria-describedby="typehelp" name="type"
+        th:value="${e.getType()}">
+</div>
+
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="submit" class="btn btn-primary">Valider</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <form action="/deletebook.do" method="post">
+                                        <input type="hidden" name="id" th:value="${e.getId()}">
+                                        <button type="submit" class="btn btn-danger">
+                                            <p><i class="bi bi-trash"></i>Supprimer</p>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                    </tbody>
+                </table>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ajoutmodal">
+                    <p><i class="bi bi-plus"></i>Ajouter</p>
+                </button>
+            </div>
+        </div>
+        <!-- Button modal ajout -->
+
+        <!-- Modal Ajout -->
+        <div class="modal fade" id="ajoutmodal" tabindex="-1" aria-labelledby="ajoutmodalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <form action="/insertbook.do" method="post">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="ajoutmodalLabel">Ajouter un book</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+    <label for="nomBookinput" class="form-label">NomBook</label>
+    <input type="text" class="form-control" id="nomBookinput"
+        aria-describedby="nomBookhelp" name="nomBook">
+</div>
+<div class="mb-3">
+    <label for="pageinput" class="form-label">Page</label>
+    <input type="number" step="1.0" class="form-control" id="pageinput"
+        aria-describedby="pagehelp" name="page">
+</div>
+<div class="mb-3">
+    <label for="typeinput" class="form-label">Type</label>
+    <input type="text" class="form-control" id="typeinput"
+        aria-describedby="typehelp" name="type">
+</div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Valider</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
