@@ -1,8 +1,6 @@
 package genesis;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 import handyman.HandyManUtils;
 
@@ -157,6 +155,9 @@ public class Language {
         content=content.replace("[tableName]", entity.getTableName());
         return content;
     }
+
+
+    
     public String generateController(Entity entity, Database database, Credentials credentials, String projectName) throws IOException, Exception{
         String content=HandyManUtils.getFileContent(Constantes.DATA_PATH+"/"+getController().getControllerTemplate()+"."+Constantes.CONTROLLER_TEMPLATE_EXT);
         content=content.replace("[namespace]", getSyntax().get("namespace"));
@@ -215,7 +216,6 @@ public class Language {
         }
         content=content.replace("[constructors]", constructors);
         String methods="", methodAnnotes, methodParameters;
-        
         String changeInstanciation, whereInstanciation, foreignList, foreignInclude;
         for(ControllerMethod m:getController().getControllerMethods()){
             methodAnnotes="";
@@ -225,15 +225,27 @@ public class Language {
             methods+=methodAnnotes;
             methodParameters="";
             for(EntityField ef:entity.getFields()){
-                methodParameters+=m.getControllerMethodParameter();
-                if(methodParameters.isEmpty()==false){ methodParameters+=","; }
-                methodParameters=methodParameters.replace("[fieldType]", ef.getType());
-                methodParameters=methodParameters.replace("[fieldNameMin]", HandyManUtils.minStart(ef.getName()));
+                if(m.getControllerMethodContent().equalsIgnoreCase("spring/controller/springControllerUpdate")){
+                    if(ef.isPrimary()){
+                        methodParameters+=" @RequestParam "+m.getControllerMethodParameter();
+                        if(methodParameters.isEmpty()==false){ methodParameters+=","; }
+                        methodParameters=methodParameters.replace("[fieldType]", ef.getType());
+                        methodParameters=methodParameters.replace("[fieldNameMin]", HandyManUtils.minStart(ef.getName()));
+                    }
+                }
+
+                if(!ef.isPrimary()){
+                    methodParameters+=" @RequestParam "+m.getControllerMethodParameter();
+                    if(methodParameters.isEmpty()==false){ methodParameters+=","; }
+                    methodParameters=methodParameters.replace("[fieldType]", ef.getType());
+                    methodParameters=methodParameters.replace("[fieldNameMin]", HandyManUtils.minStart(ef.getName()));
+                }
             }
             if(methodParameters.isEmpty()==false){
                 methodParameters=methodParameters.substring(0, methodParameters.length()-1);
             }
             methods+=HandyManUtils.getFileContent(Constantes.DATA_PATH+"/"+m.getControllerMethodContent()+"."+Constantes.CONTROLLER_TEMPLATE_EXT);
+            methods=methods.replace("[returnType]", entity.getClassName());
             methods=methods.replace("[controllerMethodParameter]", methodParameters);
             changeInstanciation="";
             foreignList="";
@@ -305,6 +317,9 @@ public class Language {
         content=content.replace("[databaseAllowKey]", String.valueOf(credentials.isAllowPublicKeyRetrieval()));
         return content;
     }
+
+
+
     public String generateView(Entity entity, String projectName) throws IOException, Exception{
         String content=HandyManUtils.getFileContent(Constantes.DATA_PATH+"/"+getView().getViewContent()+"."+Constantes.VIEW_TEMPLATE_EXT);
         String foreignList="";
@@ -375,6 +390,4 @@ public class Language {
         content=content.replace("[primaryNameMin]", HandyManUtils.minStart(entity.getPrimaryField().getName()));
         return content;
     }
-
-
 }
