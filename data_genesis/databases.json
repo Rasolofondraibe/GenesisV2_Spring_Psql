@@ -6,6 +6,7 @@
         "port":"5432",
         "types":{
             "integer":"int",
+            "bigint":"int",
             "character varying":"string",
             "real":"double",
             "double":"double",
