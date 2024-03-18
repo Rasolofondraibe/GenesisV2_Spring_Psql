@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
@@ -51,7 +52,7 @@ public class Entity {
     public void setFields(EntityField[] fields) {
         this.fields = fields;
     }
-    public void initialize(Connection connex, Credentials credentials, Database database, Language language) throws ClassNotFoundException, SQLException, Exception{
+    public void initialize(Connection connex, Credentials credentials, Database database, Language language,ViewConfig viewConfig) throws ClassNotFoundException, SQLException, Exception{
         boolean opened=false;
         Connection connect=connex;
         if(connect==null){
@@ -83,6 +84,8 @@ public class Entity {
                     }else{
                         field.setName(HandyManUtils.toCamelCase(column.getName()));
                         field.setType(language.getTypes().get(database.getTypes().get(column.getType())));
+                        field.setReferencedView(viewConfig.getTypes().get(field.getType()));
+                        field.setReferencedInput(viewConfig.getTypesInput().get(field.getType()));
                     }
                     field.setPrimary(column.isPrimary());
                     field.setForeign(column.isForeign());
@@ -200,23 +203,10 @@ public class Entity {
         for (EntityField entityColumn : liste_colonne) {
             if(!entityColumn.isPrimary() && !entityColumn.isForeign())
             {
-                if(entityColumn.getType().equals("Integer") || entityColumn.getType().equals("Double") || entityColumn.getType().equals("Float")){
-                    input = input + "<div class=\"mb-3\">\r\n" + //
-                            "    <label for=\""+entityColumn.getName()+"\" class=\"form-label\">"+entityColumn.getName()+"</label>\r\n" + //
-                            "    <input type=\"text\" class=\"form-control\" id=\""+entityColumn.getName()+"\" formControlName=\""+liste_colonne_base[i].getName()+"\">\r\n" + //
-                            "  </div> \n";
-                }
-                else if(entityColumn.getType().equals("java.time.LocalDate")){
-                    input = input + "<div class=\"mb-3\">\r\n" + //
-                            "    <label for=\""+entityColumn.getName()+"\" class=\"form-label\">"+entityColumn.getName()+"</label>\r\n" + //
-                            "    <input type=\"date\" class=\"form-control\" id=\""+entityColumn.getName()+"\" formControlName=\""+liste_colonne_base[i].getName()+"\">\r\n" + //
-                            "  </div> \n";
-                }else {
-                    input = input + "<div class=\"mb-3\">\r\n" + //
-                            "    <label for=\""+entityColumn.getName()+"\" class=\"form-label\">"+entityColumn.getName()+"</label>\r\n" + //
-                            "    <input type=\"text\" class=\"form-control\" id=\""+entityColumn.getName()+"\" formControlName=\""+liste_colonne_base[i].getName()+"\">\r\n" + //
-                            "  </div> \n";
-                }
+                input = input + "<div class=\"mb-3\">\r\n" + //
+                        "    <label for=\""+entityColumn.getName()+"\" class=\"form-label\">"+entityColumn.getName()+"</label>\r\n" + //
+                        "    <input type=\""+entityColumn.getReferencedInput()+"\" class=\"form-control\" id=\""+entityColumn.getName()+"\" formControlName=\""+liste_colonne_base[i].getName()+"\">\r\n" + //
+                        "  </div> \n";
             }else if(entityColumn.isForeign()){
                 Entity foreign = entityColumn.getEntityForeignKey(entities);
                 EntityField primary = foreign.getPrimaryField();
@@ -276,7 +266,6 @@ public class Entity {
         }
 
         Files.write(chemin, lines, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
-
         Path cheminHtml = Paths.get("data_genesis/vue/add/add-"+this.getTableName()+".component.html");
         List<String> linesHtml = Files.readAllLines(cheminHtml);
         
@@ -366,14 +355,7 @@ public class Entity {
         for (EntityField entityColumn : liste_colonne) {
             if(!entityColumn.isPrimary() && !entityColumn.isForeign())
             {
-                attribut = attribut + liste_colonne_base[i].getName();
-                if(entityColumn.getType().equals("Integer") || entityColumn.getType().equals("Double") || entityColumn.getType().equals("Float")){
-                    attribut = attribut + ":number; \n";
-                }else if(entityColumn.getType().equals("String")){
-                    attribut = attribut + ":string; \n";
-                }else if(entityColumn.getType().equals("java.time.LocalDate")){
-                    attribut = attribut + ":Date; \n";
-                }
+                attribut = attribut + liste_colonne_base[i].getName()+ ":"+entityColumn.getReferencedView()+"; \n";
             }else if(entityColumn.isForeign()){
                 attribut = attribut + entityColumn.getName()+":"+entityColumn.getType()+"Model;\n";
             }
@@ -398,15 +380,7 @@ public class Entity {
         for (EntityField entityColumn : liste_colonne) {
             if(!entityColumn.isPrimary() && !entityColumn.isForeign())
             {   
-                entre = entre + liste_colonne_base[i].getName();
-                if(entityColumn.getType().equals("Integer")  || entityColumn.getType().equals("Double") || entityColumn.getType().equals("Float")){
-                    entre = entre + ":number";
-                }else if(entityColumn.getType().equals("String")){
-                    entre = entre + ":string";
-                }
-                else if(entityColumn.getType().equals("java.time.LocalDate")){
-                    entre = entre + ":Date";
-                }
+                entre = entre + liste_colonne_base[i].getName()+":"+entityColumn.getReferencedView();
                 if(i!=(liste_colonne.length-1)){
                     entre =  entre + ",";
                 }

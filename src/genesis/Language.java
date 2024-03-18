@@ -17,6 +17,15 @@ public class Language {
     private View view;
     private CustomChanges[] customChanges;
     private NavbarLink navbarLinks;
+    private String div;
+
+
+    public String getDiv() {
+        return div;
+    }
+    public void setDiv(String div) {
+        this.div = div;
+    }
     public NavbarLink getNavbarLinks() {
         return navbarLinks;
     }
