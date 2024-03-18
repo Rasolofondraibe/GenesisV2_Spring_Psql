@@ -9,6 +9,7 @@
             "character varying":"string",
             "real":"double",
             "double":"double",
+            "double precision":"double",
             "decimal":"double",
             "numeric":"double",
             "date":"date",

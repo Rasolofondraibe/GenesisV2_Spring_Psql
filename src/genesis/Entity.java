@@ -200,18 +200,33 @@ public class Entity {
         for (EntityField entityColumn : liste_colonne) {
             if(!entityColumn.isPrimary() && !entityColumn.isForeign())
             {
-                input = input + "<div class=\"mb-3\">\r\n" + //
-                        "    <label for=\""+entityColumn.getName()+"\" class=\"form-label\">"+entityColumn.getName()+"</label>\r\n" + //
-                        "    <input type=\"text\" class=\"form-control\" id=\""+entityColumn.getName()+"\" formControlName=\""+liste_colonne_base[i].getName()+"\">\r\n" + //
-                        "  </div> \n";
+                if(entityColumn.getType().equals("Integer") || entityColumn.getType().equals("Double") || entityColumn.getType().equals("Float")){
+                    input = input + "<div class=\"mb-3\">\r\n" + //
+                            "    <label for=\""+entityColumn.getName()+"\" class=\"form-label\">"+entityColumn.getName()+"</label>\r\n" + //
+                            "    <input type=\"text\" class=\"form-control\" id=\""+entityColumn.getName()+"\" formControlName=\""+liste_colonne_base[i].getName()+"\">\r\n" + //
+                            "  </div> \n";
+                }
+                else if(entityColumn.getType().equals("java.time.LocalDate")){
+                    input = input + "<div class=\"mb-3\">\r\n" + //
+                            "    <label for=\""+entityColumn.getName()+"\" class=\"form-label\">"+entityColumn.getName()+"</label>\r\n" + //
+                            "    <input type=\"date\" class=\"form-control\" id=\""+entityColumn.getName()+"\" formControlName=\""+liste_colonne_base[i].getName()+"\">\r\n" + //
+                            "  </div> \n";
+                }else {
+                    input = input + "<div class=\"mb-3\">\r\n" + //
+                            "    <label for=\""+entityColumn.getName()+"\" class=\"form-label\">"+entityColumn.getName()+"</label>\r\n" + //
+                            "    <input type=\"text\" class=\"form-control\" id=\""+entityColumn.getName()+"\" formControlName=\""+liste_colonne_base[i].getName()+"\">\r\n" + //
+                            "  </div> \n";
+                }
             }else if(entityColumn.isForeign()){
                 Entity foreign = entityColumn.getEntityForeignKey(entities);
                 EntityField primary = foreign.getPrimaryField();
                 String name =foreign.getTableName().substring(0, 1).toUpperCase()+foreign.getTableName().substring(1);
                 EntityField fieldforeign = foreign.getComlumnPrimNonPrimary();
-                input = input + "<select class=\"form-select\" aria-label=\"Default select example\" formControlName=\""+liste_colonne_base[i].getName()+"\">\r\n" + //
+                input = input + "<div class=\"mb-3\">\r\n <label for=\"page\" class=\"form-label\">"+foreign.getTableName()+"</label> \n" + //
+                        "<select class=\"form-select\" aria-label=\"Default select example\" formControlName=\""+liste_colonne_base[i].getName()+"\">\r\n" + //
                         "  <option  *ngFor=\"let "+foreign.getTableName()+" of liste"+name+" | async\" value=\"{{"+foreign.getTableName()+"."+primary.getName()+"}}\"> {{"+foreign.getTableName()+"."+fieldforeign.getName()+"}}</option>\r\n" + //
-                        "</select>";
+                        "</select>   </div> \r\n" + //
+                                "";
             }
             i++;
         }
@@ -219,20 +234,20 @@ public class Entity {
     }
 
     public String dataDeclaration(){
-        EntityField[] liste_colonne = this.getFields();
+        EntityColumn[] liste_colonne = this.getColumns();
         String reponse = "";
-        for (EntityField entityField : liste_colonne) {
+        for (EntityColumn entityField : liste_colonne) {
             reponse = reponse + "const "+entityField.getName()+" = this."+this.getTableName()+"Form.get('"+entityField.getName()+"')?.value; \n";
         }
         return reponse;
     }
 
     public String dataDeclarationArgument(){
-        EntityField[] liste_colonne = this.getFields();
+        EntityColumn[] liste_colonne = this.getColumns();
         String reponse = "";
         int taille = liste_colonne.length;
         int i=0;
-        for (EntityField entityField : liste_colonne) {
+        for (EntityColumn entityField : liste_colonne) {
             i++;
             if(!entityField.isPrimary()){
                 reponse = reponse + entityField.getName();
@@ -282,8 +297,8 @@ public class Entity {
 
     public String constructTeteListe(){
         String tete = "";
-        EntityColumn[] liste_colonne = this.getColumns();
-        for (EntityColumn entityColumn : liste_colonne) {
+        EntityField[] liste_colonne = this.getFields();
+        for (EntityField entityColumn : liste_colonne) {
             if(!entityColumn.isPrimary())
             {
                 tete = tete + "<th scope=\"col\">"+entityColumn.getName()+"</th> \n";
@@ -293,14 +308,17 @@ public class Entity {
     }
 
 
-    public String constructBodyListe(){
+    public String constructBodyListe(Entity[] entities){
         String body = "";
-        EntityColumn[] liste_colonne = this.getColumns();
+        EntityField[] liste_colonne = this.getFields();
 
-        for (EntityColumn entityColumn : liste_colonne) {
-            if(!entityColumn.isPrimary())
+        for (EntityField entityColumn : liste_colonne) {
+            if(!entityColumn.isPrimary() && !entityColumn.isForeign())
             {
                 body = body + "<td>{{ "+this.getTableName()+"."+entityColumn.getName()+" }}</td> \n";
+            }else if(entityColumn.isForeign()){
+                Entity foreign = entityColumn.getEntityForeignKey(entities);
+                body = body + "<td>{{ "+this.getTableName()+"."+entityColumn.getName()+"."+foreign.getComlumnPrimNonPrimary().getName()+" }}</td> \n";
             }
         }
         return body;
@@ -308,7 +326,7 @@ public class Entity {
 
 
 
-    public void remplaceFichierListe(String nomProjet) throws IOException{
+    public void remplaceFichierListe(String nomProjet,Entity[] entities) throws IOException{
         Path chemin = Paths.get("data_genesis/vue/liste/liste-"+this.getTableName()+".component.ts");
         List<String> lines = Files.readAllLines(chemin);
         for (int i = 0; i < lines.size(); i++) {
@@ -327,7 +345,7 @@ public class Entity {
             ligne = ligne.replace("[nomClasse]", this.getTableName());
             ligne = ligne.replace("[GnomClasse]", this.getTableName().substring(0, 1).toUpperCase()+this.getTableName().substring(1));
             ligne = ligne.replace("[tete]", this.constructTeteListe());
-            ligne = ligne.replace("[body]", this.constructBodyListe());
+            ligne = ligne.replace("[body]", this.constructBodyListe(entities));
             ligne = ligne.replace("[id]", this.getPrimaryField().getName());
             linesHtml.set(i, ligne+"");
         }
@@ -353,16 +371,11 @@ public class Entity {
                     attribut = attribut + ":number; \n";
                 }else if(entityColumn.getType().equals("String")){
                     attribut = attribut + ":string; \n";
+                }else if(entityColumn.getType().equals("java.time.LocalDate")){
+                    attribut = attribut + ":Date; \n";
                 }
             }else if(entityColumn.isForeign()){
-                Entity foreign = entityColumn.getEntityForeignKey(entities);
-                EntityField primary = foreign.getPrimaryField();
-                attribut = attribut + primary.getName();
-                if(primary.getType().equals("Integer")){
-                    attribut = attribut + ":number; \n";
-                }else if(primary.getType().equals("String")){
-                    attribut = attribut + ":string; \n";
-                }
+                attribut = attribut + entityColumn.getName()+":"+entityColumn.getType()+"Model;\n";
             }
             i++;
         }
@@ -391,25 +404,20 @@ public class Entity {
                 }else if(entityColumn.getType().equals("String")){
                     entre = entre + ":string";
                 }
+                else if(entityColumn.getType().equals("java.time.LocalDate")){
+                    entre = entre + ":Date";
+                }
                 if(i!=(liste_colonne.length-1)){
                     entre =  entre + ",";
                 }
                 initialisation = initialisation + "this."+liste_colonne_base[i].getName()+"="+liste_colonne_base[i].getName()+";\n";
             }else if(entityColumn.isForeign()){
-                Entity foreign = entityColumn.getEntityForeignKey(entities);
-                EntityField primary = foreign.getPrimaryField();
-                if(primary.getType().equals("Integer")){
-                    entre = entre + primary.getName() + ":number";
-                }else if(primary.getType().equals("String")){
-                    entre = entre + primary.getName() + ":string";
-                }
+                entre = entre + entityColumn.getName()+":"+entityColumn.getType()+"Model";
                 if(i!=(liste_colonne.length-1)){
                     entre =  entre + ",";
                 }
-                initialisation = initialisation + "this."+primary.getName()+"="+primary.getName()+";\n";
+                initialisation = initialisation + "this."+entityColumn.getName()+"="+entityColumn.getName()+";\n";
             }
-
-
             i++;
         }
 
@@ -426,6 +434,17 @@ public class Entity {
         return constructor;
     }
 
+    public String importationModel(){
+        String importation = "";
+        EntityField[] liste_colonne = this.getFields();
+        for (EntityField entityField : liste_colonne) {
+            if (entityField.isForeign()) {
+                importation = "import { "+entityField.getType()+"Model } from \"./"+entityField.getType()+"Model\"\n";
+            }
+        }
+        return importation;
+    }
+
     public void remplacerFichierModele(String nomProjet,Entity[] entities) throws IOException{
         Path chemin = Paths.get("data_genesis/vue/modele/"+this.getTableName().substring(0, 1).toUpperCase()+this.getTableName().substring(1)+"Model.ts");
         List<String> lines = Files.readAllLines(chemin);
@@ -434,6 +453,7 @@ public class Entity {
             ligne = ligne.replace("[attribut]", this.constructAttributModele(entities));
             ligne = ligne.replace("[constructor]", this.constructConstructor(entities));
             ligne = ligne.replace("[GnomClasse]", this.getTableName().substring(0, 1).toUpperCase()+this.getTableName().substring(1));
+            ligne = ligne.replace("[importation]", this.importationModel());
             lines.set(i, ligne+"");
         }
         Files.write(chemin, lines, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
@@ -573,6 +593,7 @@ public class Entity {
         String attributForeign = "";
         String fonctionForeign = "";
         String constructorForeign = "";
+        String appelFonctionForeign = "";
         for (EntityField entityField : liste_colonne) {
             if(entityField.isForeign()){
                 Entity foreign = entityField.getEntityForeignKey(entities);
@@ -584,6 +605,7 @@ public class Entity {
                         "      this.liste"+name+" = this."+foreign.getTableName()+"Service.getAll(); \r\n" + //
                         "    }";
                 constructorForeign = ",private "+foreign.getTableName()+"Service: "+name+"Service";
+                appelFonctionForeign = "this.getAll"+name+"();";
             }
         }
 
@@ -596,6 +618,7 @@ public class Entity {
             ligne = ligne.replace("[attributForeign]", attributForeign);
             ligne = ligne.replace("[fonctionForeign]", fonctionForeign);
             ligne = ligne.replace("[constructorForeign]", constructorForeign);
+            ligne = ligne.replace("[appelFonctionForeign]", appelFonctionForeign);
             lines.set(i, ligne+"");
         }
         Files.write(chemin, lines, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
@@ -607,6 +630,7 @@ public class Entity {
         String attributForeign = "";
         String fonctionForeign = "";
         String constructorForeign = "";
+        String appelFonctionForeign = "";
         for (EntityField entityField : liste_colonne) {
             if(entityField.isForeign()){
                 Entity foreign = entityField.getEntityForeignKey(entities);
@@ -618,6 +642,7 @@ public class Entity {
                         "      this.liste"+name+" = this."+foreign.getTableName()+"Service.getAll(); \r\n" + //
                         "    }";
                 constructorForeign = ",private "+foreign.getTableName()+"Service: "+name+"Service";
+                appelFonctionForeign = "this.getAll"+name+"();";
             }
         }
 
@@ -630,6 +655,7 @@ public class Entity {
             ligne = ligne.replace("[attributForeign]", attributForeign);
             ligne = ligne.replace("[fonctionForeign]", fonctionForeign);
             ligne = ligne.replace("[constructorForeign]", constructorForeign);
+            ligne = ligne.replace("[appelFonctionForeign]", appelFonctionForeign);
             lines.set(i, ligne+"");
         }
         Files.write(chemin, lines, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
@@ -678,7 +704,7 @@ public class Entity {
         this.verificationForeignUpdate(entities);
 
         this.remplaceFichierAdd(nomProjet,entities);
-        this.remplaceFichierListe(nomProjet);
+        this.remplaceFichierListe(nomProjet,entities);
         this.remplacerFichierModele(nomProjet,entities);
         this.remplacerFichierService(nomProjet);
         this.remplacerFichierUpdate(nomProjet,entities);

@@ -211,7 +211,6 @@ public class App {
                 Files.write(chemin, lines, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
                 Path cheminDossierDestinationComponent = Paths.get(nom_projet_vue+"/src/app");
                 Files.move(chemin, cheminDossierDestinationComponent.resolve(chemin.getFileName()), StandardCopyOption.REPLACE_EXISTING);
-                
         }
     }
 }

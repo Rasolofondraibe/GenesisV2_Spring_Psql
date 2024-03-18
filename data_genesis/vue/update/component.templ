@@ -29,6 +29,7 @@ export class Update[GnomClasse]Component {
 
     ngOnInit(){
         this.id = [signNumber]this.route.snapshot.params['id'];
+        [appelFonctionForeign]
     }
 
     [fonctionForeign]
@@ -39,7 +40,7 @@ export class Update[GnomClasse]Component {
         this.[nomClasse]Service.update(this.id,[dataDeclarationArgument]).subscribe({
           next: (response) => {
             console.log('Create successful:', response); // Affichez la réponse renvoyée par la méthode create
-            this.router.navigateByUrl(`/listeBook`);
+            this.router.navigateByUrl(`/liste[GnomClasse]`);
           },
           error: (error) => {
             console.error('Error:', error); // Affichez les éventuelles erreurs
