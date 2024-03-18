@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.sql.Connection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 
@@ -19,12 +20,15 @@ import genesis.Database;
 import genesis.Entity;
 import genesis.EntityField;
 import genesis.Language;
+import genesis.ViewConfig;
 import genesis.Vue;
 import handyman.HandyManUtils;
 public class App {
     public static void main(String[] args) throws Exception {
         Database[] databases=HandyManUtils.fromJson(Database[].class, HandyManUtils.getFileContent(Constantes.DATABASE_JSON));
         Language[] languages=HandyManUtils.fromJson(Language[].class, HandyManUtils.getFileContent(Constantes.LANGUAGE_JSON));
+        ViewConfig[] viewConfig = HandyManUtils.fromJson(ViewConfig[].class, HandyManUtils.getFileContent("data_genesis\\view.json"));
+        
         Database database;
         Language language;
         String databaseName, user, pwd, host;
@@ -100,7 +104,7 @@ public class App {
             try(Connection connect=database.getConnexion(credentials)){
                 entities=database.getEntities(connect, credentials, entityName);
                 for(int i=0;i<entities.length;i++){
-                    entities[i].initialize(connect, credentials, database, language);
+                    entities[i].initialize(connect, credentials, database, language,viewConfig[0]);
                 }
                 models=new String[entities.length];
                 controllers=new String[entities.length];
@@ -182,7 +186,7 @@ public class App {
             }   
 
                 //vue/////////////////////
-                String nom_projet_vue;
+               String nom_projet_vue;
                 System.out.print("name project vue: ");
                 nom_projet_vue=scanner.next();
                 Vue vue = new Vue(nom_projet_vue);
@@ -211,7 +215,8 @@ public class App {
                 Files.write(chemin, lines, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
                 Path cheminDossierDestinationComponent = Paths.get(nom_projet_vue+"/src/app");
                 Files.move(chemin, cheminDossierDestinationComponent.resolve(chemin.getFileName()), StandardCopyOption.REPLACE_EXISTING);
-        }
+
+            }
     }
 }
 

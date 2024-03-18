@@ -1,0 +1,16 @@
+[
+    {
+        "types":{
+            "Integer":"number",
+            "Double":"number",
+            "String":"string",
+            "java.time.LocalDate":"Date"
+        },
+        "typesInput":{
+            "Integer":"number",
+            "Double":"number",
+            "java.time.LocalDate":"date",
+            "String":"text"
+        }
+    }
+]

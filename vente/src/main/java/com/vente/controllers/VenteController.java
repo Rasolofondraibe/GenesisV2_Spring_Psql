@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import java.util.List;
 
 @Controller
 @CrossOrigin
@@ -34,7 +35,7 @@ public ResponseEntity<List<Vente>> crudpage(){
     return ResponseEntity.ok(repo.findAll());
 }
 @PostMapping("/updatevente.do")
-public Vente update( @RequestParam String idVente, @RequestParam String article, @RequestParam String nombre, @RequestParam String date){
+public ResponseEntity<Vente> update( @RequestParam String idVente, @RequestParam String article, @RequestParam String nombre, @RequestParam String date){
     Vente o=new Vente();
     o.setIdVente(Integer.parseInt(idVente));
     o.setArticle(repoArticle.findById(Integer.parseInt(article)).orElseThrow());o.setNombre(Double.parseDouble(nombre));o.setDate(java.time.LocalDate.parse(date));

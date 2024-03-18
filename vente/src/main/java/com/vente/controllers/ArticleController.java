@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import java.util.List;
 
 @Controller
 @CrossOrigin
@@ -32,7 +33,7 @@ public ResponseEntity<List<Article>> crudpage(){
     return ResponseEntity.ok(repo.findAll());
 }
 @PostMapping("/updatearticle.do")
-public Article update( @RequestParam String idArticle, @RequestParam String nom){
+public ResponseEntity<Article> update( @RequestParam String idArticle, @RequestParam String nom){
     Article o=new Article();
     o.setIdArticle(Integer.parseInt(idArticle));
     o.setNom(nom);

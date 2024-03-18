@@ -6,6 +6,21 @@ public class EntityField {
     private boolean primary;
     private boolean foreign;
     private String referencedField;
+    private String referencedView;
+    private String referencedInput;
+
+    public String getReferencedInput() {
+        return referencedInput;
+    }
+    public void setReferencedInput(String referencedInput) {
+        this.referencedInput = referencedInput;
+    }
+    public String getReferencedView() {
+        return referencedView;
+    }
+    public void setReferencedView(String referencedView) {
+        this.referencedView = referencedView;
+    }
     public String getName() {
         return name;
     }
