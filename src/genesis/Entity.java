@@ -117,14 +117,10 @@ public class Entity {
 
 
     public void createDossier(String nameProjectVue){
-        File dossierAdd = new File(nameProjectVue + "/" + "src/app/add-"+this.getTableName());
-        File dossierListe = new File(nameProjectVue + "/" + "src/app/liste-"+this.getTableName());
-        File dossierUpdate = new File(nameProjectVue + "/" + "src/app/update-"+this.getTableName());
+        File dossierAdd = new File(nameProjectVue + "/" + "src/app/"+this.getTableName());
         File dossierModel = new File(nameProjectVue + "/" + "src/app/model");
         File dossierService = new File(nameProjectVue + "/" + "src/app/service");
         dossierAdd.mkdir();
-        dossierListe.mkdir();
-        dossierUpdate.mkdir();
         dossierModel.mkdir();
         dossierService.mkdir();
     }
@@ -141,26 +137,12 @@ public class Entity {
 
     public void createFichier(){
         String fichierAdd_component = "data_genesis/vue/add/component.templ";
-        this.dupliquerFichier(fichierAdd_component,"add-"+this.getTableName()+".component.ts");
+        this.dupliquerFichier(fichierAdd_component,this.getTableName()+".component.ts");
         String fichierAdd_html = "data_genesis/vue/add/html.templ";
-        this.dupliquerFichier(fichierAdd_html,"add-"+this.getTableName()+".component.html");
+        this.dupliquerFichier(fichierAdd_html,this.getTableName()+".component.html");
         String fichierAdd_css = "data_genesis/vue/add/style.templ";
-        this.dupliquerFichier(fichierAdd_css,"add-"+this.getTableName()+".component.css");
+        this.dupliquerFichier(fichierAdd_css,this.getTableName()+".component.css");
 
-        String fichierListe_component = "data_genesis/vue/liste/component.templ";
-        this.dupliquerFichier(fichierListe_component,"liste-"+this.getTableName()+".component.ts");
-        String fichierListe_html = "data_genesis/vue/liste/html.templ";
-        this.dupliquerFichier(fichierListe_html,"liste-"+this.getTableName()+".component.html");
-        String fichierListe_css = "data_genesis/vue/liste/style.templ";
-        this.dupliquerFichier(fichierListe_css,"liste-"+this.getTableName()+".component.css");
-
-        String fichierUpdate_component = "data_genesis/vue/update/component.templ";
-        this.dupliquerFichier(fichierUpdate_component,"update-"+this.getTableName()+".component.ts");
-        String fichierUpdate_html = "data_genesis/vue/update/html.templ";
-        this.dupliquerFichier(fichierUpdate_html,"update-"+this.getTableName()+".component.html");
-        String fichierUpdate_css = "data_genesis/vue/update/style.templ";
-        this.dupliquerFichier(fichierUpdate_css,"update-"+this.getTableName()+".component.css");
-    
         String fichierModele = "data_genesis/vue/modele/model.templ";
         this.dupliquerFichier(fichierModele, this.getTableName().substring(0, 1).toUpperCase()+this.getTableName().substring(1)+"Model.ts");
         
@@ -169,6 +151,9 @@ public class Entity {
         
         String fichierRoute = "data_genesis/vue/route/route.templ";
         this.dupliquerFichier(fichierRoute, "app.routes.ts");
+
+        String fichierNav = "data_genesis/vue/nav/nav.templ";
+        this.dupliquerFichier(fichierNav, "index.html");
     }
 
     
@@ -250,9 +235,25 @@ public class Entity {
     }
 
 
+    public String patchValue(Entity[] entities){
+        String reponse = "";
+        EntityField[] listeFields = this.getFields();
+        EntityColumn[] listeColumns = this.getColumns();
+        int i=0;
+        for (EntityField  entityColumn: listeFields) {
+            if(!entityColumn.isForeign()){
+                reponse  =  reponse+entityColumn.getName()+":"+this.getTableName()+"."+entityColumn.getName()+",\n";
+            }else{
+                Entity foreign  =entityColumn.getEntityForeignKey(entities);
+                reponse  =  reponse+listeColumns[i].getName()+":"+this.getTableName()+"."+entityColumn.getName()+"."+foreign.getPrimaryField().getName()+",\n";
+            }
+            i++;
+        }
+        return reponse;
+    }
 
     public void remplaceFichierAdd(String nomProjet,Entity[] entities) throws IOException{
-        Path chemin = Paths.get("data_genesis/vue/add/add-"+this.getTableName()+".component.ts");
+        Path chemin = Paths.get("data_genesis/vue/add/"+this.getTableName()+".component.ts");
         List<String> lines = Files.readAllLines(chemin);
         String dataDeclarationArgument = this.dataDeclaration();
         for (int i=0;i<lines.size();i++) {
@@ -262,25 +263,31 @@ public class Entity {
             ligne = ligne.replace("[validator]", this.validator());
             ligne = ligne.replace("[dataDeclaration]", dataDeclarationArgument);
             ligne = ligne.replace("[dataDeclarationArgument]", this.dataDeclarationArgument());
+            ligne = ligne.replace("[id]", this.getPrimaryField().getName());
+            ligne = ligne.replace("[patchValue]", this.patchValue(entities));
             lines.set(i, ligne+"");
         }
 
         Files.write(chemin, lines, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
-        Path cheminHtml = Paths.get("data_genesis/vue/add/add-"+this.getTableName()+".component.html");
+        Path cheminHtml = Paths.get("data_genesis/vue/add/"+this.getTableName()+".component.html");
         List<String> linesHtml = Files.readAllLines(cheminHtml);
         
         for (int i = 0; i < linesHtml.size(); i++) {
             String ligne = linesHtml.get(i);
             ligne = ligne.replace("[input]", this.constructInput(entities));
             ligne = ligne.replace("[nomClasse]", this.getTableName());
+            ligne = ligne.replace("[GnomClasse]", this.getTableName().substring(0, 1).toUpperCase()+this.getTableName().substring(1));
+            ligne = ligne.replace("[tete]", this.constructTeteListe());
+            ligne = ligne.replace("[body]", this.constructBodyListe(entities));
+            ligne = ligne.replace("[id]", this.getPrimaryField().getName());
             linesHtml.set(i, ligne+"");
         }
         Files.write(cheminHtml, linesHtml, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
 
-        Path cheminDossierDestinationComponent = Paths.get(nomProjet+"/src/app/add-"+this.getTableName());
+        Path cheminDossierDestinationComponent = Paths.get(nomProjet+"/src/app/"+this.getTableName());
         Files.move(chemin, cheminDossierDestinationComponent.resolve(chemin.getFileName()));
         Files.move(cheminHtml, cheminDossierDestinationComponent.resolve(cheminHtml.getFileName()));
-        Path cheminCss = Paths.get("data_genesis/vue/add/add-"+this.getTableName()+".component.css");
+        Path cheminCss = Paths.get("data_genesis/vue/add/"+this.getTableName()+".component.css");
         Files.move(cheminCss, cheminDossierDestinationComponent.resolve(cheminCss.getFileName()));
     }
 
@@ -313,39 +320,6 @@ public class Entity {
         return body;
     }
 
-
-
-    public void remplaceFichierListe(String nomProjet,Entity[] entities) throws IOException{
-        Path chemin = Paths.get("data_genesis/vue/liste/liste-"+this.getTableName()+".component.ts");
-        List<String> lines = Files.readAllLines(chemin);
-        for (int i = 0; i < lines.size(); i++) {
-            String ligne = lines.get(i);
-            ligne = ligne.replace("[nomClasse]", this.getTableName());
-            ligne = ligne.replace("[GnomClasse]", this.getTableName().substring(0, 1).toUpperCase()+this.getTableName().substring(1));
-            lines.set(i, ligne+"");
-        }
-        Files.write(chemin, lines, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
-    
-        Path cheminHtml = Paths.get("data_genesis/vue/liste/liste-"+this.getTableName()+".component.html");
-        List<String> linesHtml = Files.readAllLines(cheminHtml);
-
-        for (int i = 0; i < linesHtml.size(); i++) {
-            String ligne = linesHtml.get(i);
-            ligne = ligne.replace("[nomClasse]", this.getTableName());
-            ligne = ligne.replace("[GnomClasse]", this.getTableName().substring(0, 1).toUpperCase()+this.getTableName().substring(1));
-            ligne = ligne.replace("[tete]", this.constructTeteListe());
-            ligne = ligne.replace("[body]", this.constructBodyListe(entities));
-            ligne = ligne.replace("[id]", this.getPrimaryField().getName());
-            linesHtml.set(i, ligne+"");
-        }
-        Files.write(cheminHtml, linesHtml, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
-
-        Path cheminDossierDestinationComponent = Paths.get(nomProjet+"/src/app/liste-"+this.getTableName());
-        Files.move(chemin, cheminDossierDestinationComponent.resolve(chemin.getFileName()));
-        Files.move(cheminHtml, cheminDossierDestinationComponent.resolve(cheminHtml.getFileName()));
-        Path cheminCss = Paths.get("data_genesis/vue/liste/liste-"+this.getTableName()+".component.css");
-        Files.move(cheminCss, cheminDossierDestinationComponent.resolve(cheminCss.getFileName()));
-    }
 
     public String constructAttributModele(Entity[] entities){
         String attribut = "";
@@ -413,7 +387,7 @@ public class Entity {
         EntityField[] liste_colonne = this.getFields();
         for (EntityField entityField : liste_colonne) {
             if (entityField.isForeign()) {
-                importation = "import { "+entityField.getType()+"Model } from \"./"+entityField.getType()+"Model\"\n";
+                importation = importation +"import { "+entityField.getType()+"Model } from \"./"+entityField.getType()+"Model\"\n";
             }
         }
         return importation;
@@ -524,41 +498,6 @@ public class Entity {
         Files.move(chemin, cheminDossierDestinationComponent.resolve(chemin.getFileName()));
     }
 
-    public void remplacerFichierUpdate(String nomProjet,Entity[] entities) throws IOException{
-        Path chemin = Paths.get("data_genesis/vue/update/update-"+this.getTableName()+".component.ts");
-        List<String> lines = Files.readAllLines(chemin);
-        EntityField primary = this.getPrimaryField();
-        for (int i = 0; i < lines.size(); i++) {
-            String ligne = lines.get(i);
-            ligne = ligne.replace("[GnomClasse]", this.getTableName().substring(0, 1).toUpperCase()+this.getTableName().substring(1));
-            ligne = ligne.replace("[nomClasse]", this.getTableName());
-            ligne = ligne.replace("[validator]", this.validator());
-            ligne = ligne.replace("[dataDeclaration]", this.dataDeclaration());
-            ligne = ligne.replace("[dataDeclarationArgument]", this.dataDeclarationArgument());
-
-            if(primary.getType().equals("Integer")){
-                ligne = ligne.replace("[signNumber]", "+");
-            }
-            lines.set(i, ligne+"");
-        }
-        Files.write(chemin, lines, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
-
-        Path cheminHtml = Paths.get("data_genesis/vue/update/update-"+this.getTableName()+".component.html");
-        List<String> linesHtml = Files.readAllLines(cheminHtml);
-        for (int i = 0; i < linesHtml.size(); i++) {
-            String ligne = linesHtml.get(i);
-            ligne = ligne.replace("[input]", this.constructInput(entities));
-            ligne = ligne.replace("[nomClasse]", this.getTableName());
-            linesHtml.set(i, ligne+"");
-        }
-        Files.write(cheminHtml, linesHtml, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
-
-        Path cheminDossierDestinationComponent = Paths.get(nomProjet+"/src/app/update-"+this.getTableName());
-        Files.move(chemin, cheminDossierDestinationComponent.resolve(chemin.getFileName()));
-        Files.move(cheminHtml, cheminDossierDestinationComponent.resolve(cheminHtml.getFileName()));
-        Path cheminCss = Paths.get("data_genesis/vue/update/update-"+this.getTableName()+".component.css");
-        Files.move(cheminCss, cheminDossierDestinationComponent.resolve(cheminCss.getFileName()));
-    }
 
 
     public void verificationForeignAdd(Entity[] entities) throws IOException{
@@ -577,13 +516,13 @@ public class Entity {
                 attributForeign = attributForeign+"liste"+name+"!: Observable<"+name+"Model[]>; \n";
                 fonctionForeign = fonctionForeign + "getAll"+name+"() {\r\n" + //
                         "      this.liste"+name+" = this."+foreign.getTableName()+"Service.getAll(); \r\n" + //
-                        "    }";
-                constructorForeign = ",private "+foreign.getTableName()+"Service: "+name+"Service";
-                appelFonctionForeign = "this.getAll"+name+"();";
+                        "    } \n";
+                constructorForeign =constructorForeign+",private "+foreign.getTableName()+"Service: "+name+"Service";
+                appelFonctionForeign = appelFonctionForeign+"this.getAll"+name+"(); \n";
             }
         }
 
-        Path chemin = Paths.get("data_genesis/vue/add/add-"+this.getTableName()+".component.ts");
+        Path chemin = Paths.get("data_genesis/vue/add/"+this.getTableName()+".component.ts");
 
         List<String> lines = Files.readAllLines(chemin);
         for (int i = 0; i < lines.size(); i++) {
@@ -597,65 +536,16 @@ public class Entity {
         }
         Files.write(chemin, lines, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
     }
-
-    public void verificationForeignUpdate(Entity[] entities) throws IOException{
-        EntityField[] liste_colonne = this.getFields();
-        String importForeign = "";
-        String attributForeign = "";
-        String fonctionForeign = "";
-        String constructorForeign = "";
-        String appelFonctionForeign = "";
-        for (EntityField entityField : liste_colonne) {
-            if(entityField.isForeign()){
-                Entity foreign = entityField.getEntityForeignKey(entities);
-                String name =foreign.getTableName().substring(0, 1).toUpperCase()+foreign.getTableName().substring(1);
-                importForeign = importForeign + "import { "+name+"Service } from '../service/"+name+"Service'; \n";
-                importForeign = importForeign + "import { "+name+"Model } from '../model/"+name+"Model'; \n";
-                attributForeign = attributForeign+"liste"+name+"!: Observable<"+name+"Model[]>; \n";
-                fonctionForeign = fonctionForeign + "getAll"+name+"() {\r\n" + //
-                        "      this.liste"+name+" = this."+foreign.getTableName()+"Service.getAll(); \r\n" + //
-                        "    }";
-                constructorForeign = ",private "+foreign.getTableName()+"Service: "+name+"Service";
-                appelFonctionForeign = "this.getAll"+name+"();";
-            }
-        }
-
-        Path chemin = Paths.get("data_genesis/vue/update/update-"+this.getTableName()+".component.ts");
-
-        List<String> lines = Files.readAllLines(chemin);
-        for (int i = 0; i < lines.size(); i++) {
-            String ligne = lines.get(i);
-            ligne = ligne.replace("[importForeign]", importForeign);
-            ligne = ligne.replace("[attributForeign]", attributForeign);
-            ligne = ligne.replace("[fonctionForeign]", fonctionForeign);
-            ligne = ligne.replace("[constructorForeign]", constructorForeign);
-            ligne = ligne.replace("[appelFonctionForeign]", appelFonctionForeign);
-            lines.set(i, ligne+"");
-        }
-        Files.write(chemin, lines, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
-    }
-
 
     public String importRoute(){
-        String reponse = "";
-
         String name =this.getTableName().substring(0, 1).toUpperCase()+this.getTableName().substring(1);
-
-            reponse = reponse + "import { Add"+name+"Component } from './add-"+this.getTableName()+"/add-"+this.getTableName()+".component'; \n"
-            + "import { Liste"+name+"Component } from './liste-"+this.getTableName()+"/liste-"+this.getTableName()+".component'; \n"
-            + "import { Update"+name+"Component } from './update-"+this.getTableName()+"/update-"+this.getTableName()+".component'; \n"
-            ;
+        String reponse = "import { "+name+"Component } from './"+this.getTableName()+"/"+this.getTableName()+".component'; \n";
         return reponse;
     }
 
     public String pathRoute(){
-        String reponse = "";
-            String name =this.getTableName().substring(0, 1).toUpperCase()+this.getTableName().substring(1);
-
-            reponse = reponse + "{'path':\"add"+name+"\",component:Add"+name+"Component}, \n"
-            +"{'path':\"liste"+name+"\",component:Liste"+name+"Component}, \n"
-            +"{'path':\"versUpdate"+name+"/:id\",component:Update"+name+"Component}, \n"
-            ;
+        String name =this.getTableName().substring(0, 1).toUpperCase()+this.getTableName().substring(1);
+        String reponse = "{'path':\""+this.getTableName()+"\",component:"+name+"Component}, \n";
         return reponse;
     }
 
@@ -675,12 +565,9 @@ public class Entity {
 
     public void remplaceAllFichier(String nomProjet,Entity[] entities) throws IOException{
         this.verificationForeignAdd(entities);
-        this.verificationForeignUpdate(entities);
 
         this.remplaceFichierAdd(nomProjet,entities);
-        this.remplaceFichierListe(nomProjet,entities);
         this.remplacerFichierModele(nomProjet,entities);
         this.remplacerFichierService(nomProjet);
-        this.remplacerFichierUpdate(nomProjet,entities);
     }
 }
