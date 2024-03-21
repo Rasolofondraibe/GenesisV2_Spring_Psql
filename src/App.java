@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.sql.Connection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 
@@ -19,12 +20,15 @@ import genesis.Database;
 import genesis.Entity;
 import genesis.EntityField;
 import genesis.Language;
+import genesis.ViewConfig;
 import genesis.Vue;
 import handyman.HandyManUtils;
 public class App {
     public static void main(String[] args) throws Exception {
         Database[] databases=HandyManUtils.fromJson(Database[].class, HandyManUtils.getFileContent(Constantes.DATABASE_JSON));
         Language[] languages=HandyManUtils.fromJson(Language[].class, HandyManUtils.getFileContent(Constantes.LANGUAGE_JSON));
+        ViewConfig[] viewConfig = HandyManUtils.fromJson(ViewConfig[].class, HandyManUtils.getFileContent("data_genesis\\view.json"));
+        
         Database database;
         Language language;
         String databaseName, user, pwd, host;
@@ -100,7 +104,7 @@ public class App {
             try(Connection connect=database.getConnexion(credentials)){
                 entities=database.getEntities(connect, credentials, entityName);
                 for(int i=0;i<entities.length;i++){
-                    entities[i].initialize(connect, credentials, database, language);
+                    entities[i].initialize(connect, credentials, database, language,viewConfig[0]);
                 }
                 models=new String[entities.length];
                 controllers=new String[entities.length];
@@ -182,7 +186,7 @@ public class App {
             }   
 
                 //vue/////////////////////
-                String nom_projet_vue;
+               String nom_projet_vue;
                 System.out.print("name project vue: ");
                 nom_projet_vue=scanner.next();
                 Vue vue = new Vue(nom_projet_vue);
@@ -195,9 +199,20 @@ public class App {
                 
                 String importRoute = "";
                 String pathRoute = "";
+                String lien = "";
+                int j = 0;
                 for (Entity entity : entities) {
                     importRoute = importRoute + entity.importRoute();
-                    pathRoute = pathRoute + entity.pathRoute();
+                    if(j!=0){
+                        pathRoute = pathRoute + entity.pathRoute();
+                        lien = lien + "<li><a class=\"dropdown-item\" href=\"/"+entity.getTableName()+"\">"+entity.getTableName()+"</a></li> \n";
+
+                    }else{
+                        String name =entity.getTableName().substring(0, 1).toUpperCase()+entity.getTableName().substring(1);
+                        pathRoute = pathRoute + "{'path':\"\",component:"+name+"Component}, \n";
+                        lien = lien + "<li><a class=\"dropdown-item\" href=\"\">"+entity.getTableName()+"</a></li> \n";
+                    }
+                    j++;
                 }
 
                 Path chemin = Paths.get("data_genesis/vue/route/app.routes.ts");
@@ -211,8 +226,21 @@ public class App {
                 Files.write(chemin, lines, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
                 Path cheminDossierDestinationComponent = Paths.get(nom_projet_vue+"/src/app");
                 Files.move(chemin, cheminDossierDestinationComponent.resolve(chemin.getFileName()), StandardCopyOption.REPLACE_EXISTING);
-                
-        }
+
+
+                Path cheminNav = Paths.get("data_genesis/vue/nav/index.html");
+                List<String> linesNav = Files.readAllLines(cheminNav);
+                for(int i=0;i<linesNav.size();i++){
+                    String ligne = linesNav.get(i);
+                    ligne = ligne.replace("[lien]", lien);
+                    ligne = ligne.replace("[projetName]", nom_projet_vue);
+                    linesNav.set(i, ligne+"");
+                }
+                Files.write(cheminNav, linesNav, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
+                Path cheminDossierDestinationNav = Paths.get(nom_projet_vue+"/src");
+                Files.move(cheminNav, cheminDossierDestinationNav.resolve(cheminNav.getFileName()), StandardCopyOption.REPLACE_EXISTING);
+
+            }
     }
 }
 

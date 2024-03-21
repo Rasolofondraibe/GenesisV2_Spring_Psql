@@ -1,6 +1,7 @@
 package genesis;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
@@ -24,7 +25,9 @@ public class Vue {
 
     
     public void createProjetVue(){
-        String commande = "ng new "+this.getNomProject()+" --style=css --skip-install";
+        File projet = new File(this.getNomProject());
+        projet.mkdir();
+        String commande = "xcopy data_genesis\\projectVue "+this.getNomProject()+" /s /i";
         try {
             ProcessBuilder processBuilder = new ProcessBuilder();
             
@@ -44,5 +47,6 @@ public class Vue {
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
+
     }
 }

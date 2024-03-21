@@ -184,6 +184,7 @@
         "navbarLinks":{
             "path":"[projectNameMaj]/src/main/resources/templates/layout/layout.html",
             "link":"<a href=\"/tocrud[classNameMin].do\" class=\"nav-item nav-link\"><i class=\"fa fa-tachometer-alt me-2\"></i>[classNameformattedMaj]</a>"
-        }
+        },
+        "div":"<div class=\"mb-3\">\r\n <label for=\"[name]\" class=\"form-label\">[name]</label> \r\n <input type=\"[referencedInput]\" class=\"form-control\" id=\"[name]\" formControlName=\"[colonneName]\">\r\n </div> \n"
     }
 ]
