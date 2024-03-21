@@ -1,8 +1,9 @@
 package com.[projectNameMin].entities;
 
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface [classNameMaj]Repository extends CrudRepository<[classNameMaj],Integer> {
-
-    
+    Page<[classNameMaj]> findAll(Pageable pageable);    
 }
