@@ -17,9 +17,13 @@ import { Observable } from 'rxjs';
 })
 export class [GnomClasse]Component {
   [nomClasse]Form!: FormGroup; // Définir un FormGroup pour gérer le formulaire
-  liste[GnomClasse] !: Observable<[GnomClasse]Model[]>;
+  liste[GnomClasse] !: [GnomClasse]Model[];
   [nomClasse] !: [GnomClasse]Model;
   [attributForeign]
+
+  page : number = 0;
+  size : number = 10;
+  nombrePage !: Array<number>;
 
   constructor(private formBuilder: FormBuilder, private [nomClasse]Service: [GnomClasse]Service,private router:Router[constructorForeign]) {
     this.[nomClasse]Form = this.formBuilder.group({
