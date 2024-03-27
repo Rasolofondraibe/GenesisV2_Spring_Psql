@@ -1,0 +1,153 @@
+<div class="container-fluid pt-4 px-4" th:fragment="content">
+    <div class="row g-4">
+        <div class="col-sm-12 col-xl-6 offset-3">
+            <div class="bg-secondary rounded h-100 p-4">
+                <h6 class="mb-4">Liste de vente</h6>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Id vente</th><th scope="col">Article</th><th scope="col">Nombre</th><th scope="col">Date</th><th scope="col">Unite</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each=" e: ${o}">
+                                <td th:text="${e.getIdVente()}"></td><td th:text="${e.getArticle().label}"></td><td th:text="${e.getNombre()}"></td><td th:text="${e.getDate()}"></td><td th:text="${e.getUnite().label}"></td>
+                                <td>
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                        th:data-bs-target="'#modifiermodal'+${e.getIdVente()}">
+                                        <p><i class="bi bi-pencil"></i>Modifier</p>
+                                    </button>
+                                    <div class="modal fade" th:id="'modifiermodal'+${e.getIdVente()}" tabindex="-1"
+                                        aria-labelledby="modifiermodalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <form action="/updatevente.do" method="post">
+                                                    <div class="modal-header">
+                                                        <h1 class="modal-title fs-5" id="modifiermodalLabel">Modifier un
+                                                            vente</h1>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                            aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <input type="hidden" name="idVente" th:value="${e.getIdVente()}">
+                                                        <div class="form-floating mb-3"> 
+    <select class="form-select" id="articleSelect" name="article">
+        <span th:each="m:${articles}" th:switch="${m.getIdArticle}">
+            <option th:case="${e.getArticle().getIdArticle()}" th:value="${m.getIdArticle()}" selected>
+                <span th:text="${m.label}"></span>
+            </option>
+            <option th:case="*" th:value="${m.getIdArticle()}">
+                <span th:text="${m.label}"></span>
+            </option>
+        </span>
+    </select> 
+    <label for="articleSelect">
+        Article
+    </label> 
+</div>
+<div class="mb-3">
+    <label for="nombreinput" class="form-label">Nombre</label>
+    <input type="text" class="form-control" id="nombreinput"
+        aria-describedby="nombrehelp" name="nombre"
+        th:value="${e.getNombre()}">
+</div>
+<div class="mb-3">
+    <label for="dateinput" class="form-label">Date</label>
+    <input type="date" class="form-control" id="dateinput"
+        aria-describedby="datehelp" name="date"
+        th:value="${e.getDate()}">
+</div>
+<div class="form-floating mb-3"> 
+    <select class="form-select" id="uniteSelect" name="unite">
+        <span th:each="m:${unites}" th:switch="${m.getIdUnite}">
+            <option th:case="${e.getUnite().getIdUnite()}" th:value="${m.getIdUnite()}" selected>
+                <span th:text="${m.label}"></span>
+            </option>
+            <option th:case="*" th:value="${m.getIdUnite()}">
+                <span th:text="${m.label}"></span>
+            </option>
+        </span>
+    </select> 
+    <label for="uniteSelect">
+        Unite
+    </label> 
+</div>
+
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="submit" class="btn btn-primary">Valider</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <form action="/deletevente.do" method="post">
+                                        <input type="hidden" name="idVente" th:value="${e.getIdVente()}">
+                                        <button type="submit" class="btn btn-danger">
+                                            <p><i class="bi bi-trash"></i>Supprimer</p>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                    </tbody>
+                </table>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ajoutmodal">
+                    <p><i class="bi bi-plus"></i>Ajouter</p>
+                </button>
+            </div>
+        </div>
+        <!-- Button modal ajout -->
+
+        <!-- Modal Ajout -->
+        <div class="modal fade" id="ajoutmodal" tabindex="-1" aria-labelledby="ajoutmodalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <form action="/insertvente.do" method="post">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="ajoutmodalLabel">Ajouter un vente</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-floating mb-3"> 
+    <select class="form-select" id="articleSelect" name="article">
+        <option th:each="m:${articles}" th:value="${m.getIdArticle()}">
+            <span th:text="${m.label}"></span>
+        </option>
+    </select> 
+    <label for="articleSelect">
+        Article
+    </label> 
+</div>
+<div class="mb-3">
+    <label for="nombreinput" class="form-label">Nombre</label>
+    <input type="text" class="form-control" id="nombreinput"
+        aria-describedby="nombrehelp" name="nombre">
+</div>
+<div class="mb-3">
+    <label for="dateinput" class="form-label">Date</label>
+    <input type="date" class="form-control" id="dateinput"
+        aria-describedby="datehelp" name="date">
+</div>
+<div class="form-floating mb-3"> 
+    <select class="form-select" id="uniteSelect" name="unite">
+        <option th:each="m:${unites}" th:value="${m.getIdUnite()}">
+            <span th:text="${m.label}"></span>
+        </option>
+    </select> 
+    <label for="uniteSelect">
+        Unite
+    </label> 
+</div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Valider</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

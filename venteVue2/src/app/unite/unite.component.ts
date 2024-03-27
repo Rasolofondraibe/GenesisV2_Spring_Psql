@@ -1,45 +1,47 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators,ReactiveFormsModule } from '@angular/forms';
 
-import { [GnomClasse]Model } from '../model/[GnomClasse]Model';
-import { [GnomClasse]Service } from '../service/[GnomClasse]Service';
+import { UniteModel } from '../model/UniteModel';
+import { UniteService } from '../service/UniteService';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
-[importForeign]
+
 
 @Component({
-  selector: 'app-[nomClasse]',
+  selector: 'app-unite',
   standalone: true,
-  templateUrl: './[nomClasse].component.html',
-  styleUrls: ['./[nomClasse].component.css'],
+  templateUrl: './unite.component.html',
+  styleUrls: ['./unite.component.css'],
   imports : [CommonModule,ReactiveFormsModule]
 })
-export class [GnomClasse]Component {
-  [nomClasse]Form!: FormGroup; // Définir un FormGroup pour gérer le formulaire
-  liste[GnomClasse] !: [GnomClasse]Model[];
-  [nomClasse] !: [GnomClasse]Model;
-  [attributForeign]
+export class UniteComponent {
+  uniteForm!: FormGroup; // Définir un FormGroup pour gérer le formulaire
+  listeUnite !: UniteModel[];
+  unite !: UniteModel;
+  
 
   page : number = 0;
   size : number = 10;
   nombrePage !: Array<number>;
 
-  constructor(private formBuilder: FormBuilder, private [nomClasse]Service: [GnomClasse]Service,private router:Router[constructorForeign]) {
-    this.[nomClasse]Form = this.formBuilder.group({
-      [validator]
+  constructor(private formBuilder: FormBuilder, private uniteService: UniteService,private router:Router) {
+    this.uniteForm = this.formBuilder.group({
+      unite: ['', Validators.required], 
+
     });
   }
 
   ngOnInit() {
-    this.getAll[GnomClasse]s();
-    [appelFonctionForeign]
+    this.getAllUnites();
+    
   }
 
-  getAll[GnomClasse]s() {
+  getAllUnites() {
+      this.uniteService.getAll(this.page, this.size).subscribe(
         data => {
           this.nombrePage = new Array(data.totalPages);
-          this.liste[GnomClasse] = data.content;
+          this.listeUnite = data.content;
         }
       );
   }
@@ -55,22 +57,24 @@ export class [GnomClasse]Component {
          page = 0;
       }
       this.page = page;
-      this.getAll[GnomClasse]s();
+      this.getAllUnites();
   }
 
-  [fonctionForeign]
+  
 
   resetForm(): void {
-      this.[nomClasse]Form.reset(); // Réinitialiser le formulaire
+      this.uniteForm.reset(); // Réinitialiser le formulaire
   }
 
   submit() {
-    if (this.[nomClasse]Form.valid) {
-      [dataDeclaration]
-      this.[nomClasse]Service.create([dataDeclarationArgument]).subscribe({
+    if (this.uniteForm.valid) {
+      const id_unite = this.uniteForm.get('id_unite')?.value; 
+const unite = this.uniteForm.get('unite')?.value; 
+
+      this.uniteService.create(unite).subscribe({
         next: (response) => {
           console.log('Create successful:', response); // Affichez la réponse renvoyée par la méthode create
-          this.getAll[GnomClasse]s();
+          this.getAllUnites();
         },
         error: (error) => {
           console.error('Error:', error); // Affichez les éventuelles erreurs
@@ -79,11 +83,11 @@ export class [GnomClasse]Component {
     }
   }
 
-  delete[GnomClasse](id:number | undefined):void{
-        this.[nomClasse]Service.delete(id).subscribe({
+  deleteUnite(id:number | undefined):void{
+        this.uniteService.delete(id).subscribe({
           next: (response) => {
             console.log('delete successful:', response); 
-            this.getAll[GnomClasse]s();
+            this.getAllUnites();
           },
           error: (error) => {
             console.error('Error:', error); 
@@ -91,23 +95,27 @@ export class [GnomClasse]Component {
         });
   }
 
-  versUpdate([nomClasse]:[GnomClasse]Model){
-        this.[nomClasse] = [nomClasse];
+  versUpdate(unite:UniteModel){
+        this.unite = unite;
 
-        this.[nomClasse]Form.patchValue({
-          [patchValue]
+        this.uniteForm.patchValue({
+          idUnite:unite.idUnite,
+unite:unite.unite,
+
         });
   }
 
 
   update() {
-      if (this.[nomClasse]Form.valid) {
-        [dataDeclaration]
-        const id = this.[nomClasse].[id];
-        this.[nomClasse]Service.update(id,[dataDeclarationArgument]).subscribe({
+      if (this.uniteForm.valid) {
+        const id_unite = this.uniteForm.get('id_unite')?.value; 
+const unite = this.uniteForm.get('unite')?.value; 
+
+        const id = this.unite.idUnite;
+        this.uniteService.update(id,unite).subscribe({
           next: (response) => {
             console.log('Create successful:', response); // Affichez la réponse renvoyée par la méthode create
-            this.getAll[GnomClasse]s();
+            this.getAllUnites();
           },
           error: (error) => {
             console.error('Error:', error); // Affichez les éventuelles erreurs

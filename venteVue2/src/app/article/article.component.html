@@ -9,12 +9,16 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">[GnomClasse]</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Article</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form [formGroup]="[nomClasse]Form" (ngSubmit)="submit()">
-            [input]
+        <form [formGroup]="articleForm" (ngSubmit)="submit()">
+            <div class="mb-3">
+    <label for="nom" class="form-label">nom</label>
+    <input type="text" class="form-control" id="nom" formControlName="nom">
+  </div> 
+
           <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Add</button>
         </form>
       </div>
@@ -26,14 +30,16 @@
 <table class="table">
     <thead>
       <tr>
-        [tete]
+        <th scope="col">nom</th> 
+
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let [nomClasse] of liste[GnomClasse]">
-        [body]
-        <td><button type="button" class="btn btn-primary" (click)="delete[GnomClasse]([nomClasse].[id])">Delete</button></td>
-        <td><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#updateModal"  (click)="versUpdate([nomClasse])">
+      <tr *ngFor="let article of listeArticle | async">
+        <td>{{ article.nom }}</td> 
+
+        <td><button type="button" class="btn btn-primary" (click)="deleteArticle(article.idArticle)">Delete</button></td>
+        <td><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#updateModal"  (click)="versUpdate(article)">
           Update
         </button></td>
       </tr>
@@ -57,8 +63,12 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form [formGroup]="[nomClasse]Form" (ngSubmit)="update()">
-            [input]
+        <form [formGroup]="articleForm" (ngSubmit)="update()">
+            <div class="mb-3">
+    <label for="nom" class="form-label">nom</label>
+    <input type="text" class="form-control" id="nom" formControlName="nom">
+  </div> 
+
           <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Update</button>
         </form>
       </div>

@@ -1,0 +1,113 @@
+<div>
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" (click)="resetForm()">
+  Add
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Vente</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="venteForm" (ngSubmit)="submit()">
+            <div class="mb-3">
+ <label for="page" class="form-label">article</label> 
+<select class="form-select" aria-label="Default select example" formControlName="id_article">
+  <option  *ngFor="let article of listeArticle | async" value="{{article.idArticle}}"> {{article.nom}}</option>
+</select>   </div> 
+<div class="mb-3">
+    <label for="nombre" class="form-label">nombre</label>
+    <input type="number" class="form-control" id="nombre" formControlName="nombre">
+  </div> 
+<div class="mb-3">
+    <label for="date" class="form-label">date</label>
+    <input type="date" class="form-control" id="date" formControlName="date">
+  </div> 
+<div class="mb-3">
+ <label for="page" class="form-label">unite</label> 
+<select class="form-select" aria-label="Default select example" formControlName="unite">
+  <option  *ngFor="let unite of listeUnite | async" value="{{unite.idUnite}}"> {{unite.unite}}</option>
+</select>   </div> 
+
+          <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Add</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<table class="table">
+    <thead>
+      <tr>
+        <th scope="col">article</th> 
+<th scope="col">nombre</th> 
+<th scope="col">date</th> 
+<th scope="col">unite</th> 
+
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let vente of listeVente | async">
+        <td>{{ vente.article.nom }}</td> 
+<td>{{ vente.nombre }}</td> 
+<td>{{ vente.date }}</td> 
+<td>{{ vente.unite.unite }}</td> 
+
+        <td><button type="button" class="btn btn-primary" (click)="deleteVente(vente.idVente)">Delete</button></td>
+        <td><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#updateModal"  (click)="versUpdate(vente)">
+          Update
+        </button></td>
+      </tr>
+    </tbody>
+
+    <nav aria-label="Page navigation example">
+      <ul class="pagination">
+        <li class="page-item"><a class="page-link" href="#" (click)="changePage(-2)">Previous</a></li>
+        <li class="page-item" *ngFor="let p of nombrePage;let i = index"><a class="page-link" href="#" (click)="changePage(i)">{{i+1}}</a></li>
+        <li class="page-item"><a class="page-link" href="#" (click)="changePage(-1)">Next</a></li>
+      </ul>
+    </nav>
+  </table>
+
+
+<div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Article</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="venteForm" (ngSubmit)="update()">
+            <div class="mb-3">
+ <label for="page" class="form-label">article</label> 
+<select class="form-select" aria-label="Default select example" formControlName="id_article">
+  <option  *ngFor="let article of listeArticle | async" value="{{article.idArticle}}"> {{article.nom}}</option>
+</select>   </div> 
+<div class="mb-3">
+    <label for="nombre" class="form-label">nombre</label>
+    <input type="number" class="form-control" id="nombre" formControlName="nombre">
+  </div> 
+<div class="mb-3">
+    <label for="date" class="form-label">date</label>
+    <input type="date" class="form-control" id="date" formControlName="date">
+  </div> 
+<div class="mb-3">
+ <label for="page" class="form-label">unite</label> 
+<select class="form-select" aria-label="Default select example" formControlName="unite">
+  <option  *ngFor="let unite of listeUnite | async" value="{{unite.idUnite}}"> {{unite.unite}}</option>
+</select>   </div> 
+
+          <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Update</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>

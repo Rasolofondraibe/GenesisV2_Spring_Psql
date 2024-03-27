@@ -1,0 +1,92 @@
+<div class="container-fluid pt-4 px-4" th:fragment="content">
+    <div class="row g-4">
+        <div class="col-sm-12 col-xl-6 offset-3">
+            <div class="bg-secondary rounded h-100 p-4">
+                <h6 class="mb-4">Liste de unite</h6>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Id unite</th><th scope="col">Unite</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each=" e: ${o}">
+                                <td th:text="${e.getIdUnite()}"></td><td th:text="${e.getUnite()}"></td>
+                                <td>
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                        th:data-bs-target="'#modifiermodal'+${e.getIdUnite()}">
+                                        <p><i class="bi bi-pencil"></i>Modifier</p>
+                                    </button>
+                                    <div class="modal fade" th:id="'modifiermodal'+${e.getIdUnite()}" tabindex="-1"
+                                        aria-labelledby="modifiermodalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <form action="/updateunite.do" method="post">
+                                                    <div class="modal-header">
+                                                        <h1 class="modal-title fs-5" id="modifiermodalLabel">Modifier un
+                                                            unite</h1>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                            aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <input type="hidden" name="idUnite" th:value="${e.getIdUnite()}">
+                                                        <div class="mb-3">
+    <label for="uniteinput" class="form-label">Unite</label>
+    <input type="text" class="form-control" id="uniteinput"
+        aria-describedby="unitehelp" name="unite"
+        th:value="${e.getUnite()}">
+</div>
+
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="submit" class="btn btn-primary">Valider</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <form action="/deleteunite.do" method="post">
+                                        <input type="hidden" name="idUnite" th:value="${e.getIdUnite()}">
+                                        <button type="submit" class="btn btn-danger">
+                                            <p><i class="bi bi-trash"></i>Supprimer</p>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                    </tbody>
+                </table>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ajoutmodal">
+                    <p><i class="bi bi-plus"></i>Ajouter</p>
+                </button>
+            </div>
+        </div>
+        <!-- Button modal ajout -->
+
+        <!-- Modal Ajout -->
+        <div class="modal fade" id="ajoutmodal" tabindex="-1" aria-labelledby="ajoutmodalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <form action="/insertunite.do" method="post">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="ajoutmodalLabel">Ajouter un unite</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+    <label for="uniteinput" class="form-label">Unite</label>
+    <input type="text" class="form-control" id="uniteinput"
+        aria-describedby="unitehelp" name="unite">
+</div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Valider</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
