@@ -1,0 +1,3 @@
+public ResponseEntity<Page<[returnType]>> crudpagePagination(@RequestParam(defaultValue = "0") int page,@RequestParam(defaultValue = "10") int size){
+    return ResponseEntity.ok((Page<[returnType]>)repo.findAll(PageRequest.of(page, size)));
+}

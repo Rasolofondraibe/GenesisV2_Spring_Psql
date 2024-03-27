@@ -137,6 +137,13 @@
                 },
                 {
                     "controllerMethodAnnotations":[
+                        "@GetMapping(\"/tocrudPagination[classNameMin].do\")"
+                    ],
+                    "controllerMethodParameter":"",
+                    "controllerMethodContent":"spring/controller/springControllerReadPagination"
+                },
+                {
+                    "controllerMethodAnnotations":[
                         "@PostMapping(\"/update[classNameMin].do\")"
                     ],
                     "controllerMethodParameter":"String [fieldNameMin]",
