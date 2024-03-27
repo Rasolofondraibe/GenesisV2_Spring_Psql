@@ -14,6 +14,11 @@ export class [GnomClasse]Service{
 
     constructor(private http: HttpClient) { }
 
+    getAllPagination(page:number,size:number): Observable<any> {
+        const url = `${this.baseUrl}/tocrudPagination[nomClasse].do?page=${page}&size=${size}`;
+        return this.http.get<any>(url);
+    }
+
     getAll(): Observable<[GnomClasse]Model[]> {
         const url = this.baseUrl+'/tocrud[nomClasse].do';
         return this.http.get<[GnomClasse]Model[]>(url);
