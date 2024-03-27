@@ -14,14 +14,9 @@ export class [GnomClasse]Service{
 
     constructor(private http: HttpClient) { }
 
-    getAllPagination(page:number,size:number): Observable<any> {
-        const url = `${this.baseUrl}/tocrudPagination[nomClasse].do?page=${page}&size=${size}`;
+    getAll(page:number,size:number): Observable<any> {
+        const url = `${this.baseUrl}/tocrud[nomClasse].do?page=${page}&size=${size}`;
         return this.http.get<any>(url);
-    }
-
-    getAll(): Observable<[GnomClasse]Model[]> {
-        const url = this.baseUrl+'/tocrud[nomClasse].do';
-        return this.http.get<[GnomClasse]Model[]>(url);
     }
 
     create([argumentCreate]): Observable<any> {
@@ -35,11 +30,5 @@ export class [GnomClasse]Service{
 
     delete([id]:any): Observable<any> {
         return this.http.post(`${this.baseUrl}/delete[nomClasse].do?[id]=${[id]}`,null);
-    }
-
-    findById(id: number): Observable<[GnomClasse]Model | undefined> {
-        return this.getAll().pipe(
-          map(([nomClasse]s: [GnomClasse]Model[]) => [nomClasse]s.find([nomClasse] => [nomClasse].[id] === id))
-        );
     }
 }

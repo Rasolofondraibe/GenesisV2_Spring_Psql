@@ -30,7 +30,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let [nomClasse] of liste[GnomClasse] | async">
+      <tr *ngFor="let [nomClasse] of liste[GnomClasse]">
         [body]
         <td><button type="button" class="btn btn-primary" (click)="delete[GnomClasse]([nomClasse].[id])">Delete</button></td>
         <td><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#updateModal"  (click)="versUpdate([nomClasse])">
@@ -38,6 +38,14 @@
         </button></td>
       </tr>
     </tbody>
+
+    <nav aria-label="Page navigation example">
+      <ul class="pagination">
+        <li class="page-item"><a class="page-link" href="#" (click)="changePage(-2)">Previous</a></li>
+        <li class="page-item" *ngFor="let p of nombrePage;let i = index"><a class="page-link" href="#" (click)="changePage(i)">{{i+1}}</a></li>
+        <li class="page-item"><a class="page-link" href="#" (click)="changePage(-1)">Next</a></li>
+      </ul>
+    </nav>
   </table>
 
 
