@@ -1,5 +1,5 @@
 public ResponseEntity<[returnType]> authenticateUser(@RequestParam String login,@RequestParam String pwd) throws NoSuchAlgorithmException{
-    Optional<classNameMaj> u=repo.findByEmailAndMdp(login, pwd);
+    Optional<classNameMaj> u=repo.findUserByEmailAndMdp(login, pwd);
     if(u.isPresent){
         [classNameMaj] o=u.get();
         return ResponseEntity.ok(o);
