@@ -33,7 +33,7 @@ export class [GnomClasse]Component {
   }
 
   getAll[GnomClasse]s() {
-      this.[nomClasse]Service.getAll(this.page, this.size).subscribe(
+      this.[nomClasse]Service.getAllPagination(this.page, this.size).subscribe(
         data => {
           this.nombrePage = new Array(data.totalPages);
           this.liste[GnomClasse] = data.content;
