@@ -22,6 +22,16 @@ public class Entity {
     private String className;
     private EntityField[] fields;
     private EntityField primaryField;
+    private boolean isUser;
+
+    public boolean getIsUser(){
+        return isUser;
+    }
+
+    public void setIsUser(boolean isuser){
+        this.isUser = isuser;
+    }
+
     public EntityField getPrimaryField() {
         return primaryField;
     }

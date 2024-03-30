@@ -104,6 +104,9 @@ public class App {
             try(Connection connect=database.getConnexion(credentials)){
                 entities=database.getEntities(connect, credentials, entityName);
                 for(int i=0;i<entities.length;i++){
+                    if(entities[i].getTableName().equalsIgnoreCase("user") || entities[i].getTableName().equalsIgnoreCase("utilisateur")){
+                        entities[i].setIsUser(true);
+                    }
                     entities[i].initialize(connect, credentials, database, language,viewConfig[0]);
                 }
                 models=new String[entities.length];

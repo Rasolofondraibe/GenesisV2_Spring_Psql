@@ -81,7 +81,9 @@
                 "import org.springframework.web.bind.annotation.CrossOrigin;",
                 "import java.util.List;",
                 "import org.springframework.data.domain.Page;",
-                "import org.springframework.data.domain.PageRequest;"
+                "import org.springframework.data.domain.PageRequest;",
+                "import java.security.NoSuchAlgorithmException;",
+                "import java.util.Optional;"
             ],
             "controllerAnnotations":[
                 "@Controller",
@@ -155,6 +157,13 @@
                     ],
                     "controllerMethodParameter":"",
                     "controllerMethodContent":"spring/controller/springControllerDelete"
+                },
+                {
+                    "controllerMethodAnnotations":[
+                        "@PostMapping(\"/authenticate[classNameMin].do\")"
+                    ],
+                    "controllerMethodParameter":"",
+                    "controllerMethodContent":"spring/controller/springControllerUserAuth"
                 }
             ],
             "controllerSavepath":"[projectNameMaj]/src/main/java/com/[projectNameMin]/controllers",
