@@ -45,6 +45,7 @@ public class App {
         String foreignContext;
         String customChanges, changesFile;
         String navLink, navLinkPath;
+        String tableUserName;
         try(Scanner scanner=new Scanner(System.in)){
             System.out.println("Choose a database engine:");
             for(int i=0;i<databases.length;i++){
@@ -72,6 +73,8 @@ public class App {
             System.out.print("Allow public key retrieval ?(Y/n): ");
             allowPublicKeyRetrieval=scanner.next().equalsIgnoreCase("Y");
             System.out.println();
+            System.out.print("table user name: ");
+            tableUserName = scanner.next();
             System.out.print("Enter your project name: ");
             projectName=scanner.next();
             System.out.print("Which entities to import ?(* to select all): ");
@@ -115,7 +118,7 @@ public class App {
                 navLink="";
                 for(int i=0;i<models.length;i++){
                     models[i]=language.generateModel(entities[i], projectName);
-                    controllers[i]=language.generateController(entities[i], database, credentials, projectName);
+                    controllers[i]=language.generateController(entities[i], database, credentials, projectName,tableUserName);
                     views[i]=language.generateView(entities[i], projectName);
                     modelFile=language.getModel().getModelSavePath().replace("[projectNameMaj]", HandyManUtils.majStart(projectName));
                     controllerFile=language.getController().getControllerSavepath().replace("[projectNameMaj]", HandyManUtils.majStart(projectName));
@@ -138,6 +141,14 @@ public class App {
                                 foreignContext=foreignContext.replace("[classNameMaj]", HandyManUtils.majStart(ef.getType()));
                             }
                         }
+                        String anotationUser = "";
+                        String fonctionLogin="";
+
+                        if(entities[i].getTableName().equals(tableUserName)){
+                            anotationUser = language.getModel().getAnotationUser().replace("[classNameMaj]", HandyManUtils.majStart(entities[i].getClassName()));
+                            fonctionLogin = language.getModel().getFonctionLogin().replace("[classNameMaj]", HandyManUtils.majStart(entities[i].getClassName()));
+                        }
+
                         customFile=f.getName().replace("[classNameMaj]", HandyManUtils.majStart(entities[i].getClassName()));
                         customFile=language.getModel().getModelSavePath().replace("[projectNameMaj]", HandyManUtils.majStart(projectName))+"/"+customFile;
                         customFile=customFile.replace("[projectNameMin]", HandyManUtils.minStart(projectName));
@@ -148,6 +159,8 @@ public class App {
                         customFileContent=customFileContent.replace("[databaseName]", credentials.getDatabaseName());
                         customFileContent=customFileContent.replace("[user]", credentials.getUser());
                         customFileContent=customFileContent.replace("[pwd]", credentials.getPwd());
+                        customFileContent=customFileContent.replace("[anotationUser]", anotationUser);
+                        customFileContent=customFileContent.replace("[fonctionLogin]", fonctionLogin);
                         customFileContent=customFileContent.replace("[modelForeignContextAttr]", foreignContext);
                         HandyManUtils.createFile(customFile);
                         HandyManUtils.overwriteFileContent(customFile, customFileContent);

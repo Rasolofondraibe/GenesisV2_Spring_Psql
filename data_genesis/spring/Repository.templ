@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface [classNameMaj]Repository extends CrudRepository<[classNameMaj],Integer> {
     Page<[classNameMaj]> findAll(Pageable pageable);    
-
-    @Query("SELECT u FROM Utilisateur u WHERE u.email = :email AND u.mdp = :mdp")
-    Optional<[classNameMaj]> findUserByEmailAndMdp(@Param("email") String email, @Param("mdp") String mdp);
+  
+    [anotationUser]
+    [fonctionLogin]
 }

@@ -167,7 +167,7 @@ public class Language {
 
 
     
-    public String generateController(Entity entity, Database database, Credentials credentials, String projectName) throws IOException, Exception{
+    public String generateController(Entity entity, Database database, Credentials credentials, String projectName,String nameUserTable) throws IOException, Exception{
         String content=HandyManUtils.getFileContent(Constantes.DATA_PATH+"/"+getController().getControllerTemplate()+"."+Constantes.CONTROLLER_TEMPLATE_EXT);
         content=content.replace("[namespace]", getSyntax().get("namespace"));
         content=content.replace("[namespaceStart]", getSyntax().get("namespaceStart"));
@@ -229,7 +229,12 @@ public class Language {
         for(ControllerMethod m:getController().getControllerMethods()){
             methodAnnotes="";
             for(String ma:m.getControllerMethodAnnotations()){
-                methodAnnotes+=ma+"\n";
+                if(!m.getControllerMethodContent().equalsIgnoreCase("spring/controller/springControllerUserAuth")){
+                    methodAnnotes+=ma+"\n";
+                }
+                if(m.getControllerMethodContent().equalsIgnoreCase("spring/controller/springControllerUserAuth") && entity.getTableName().equals(nameUserTable)){
+                    methodAnnotes+=ma+"\n";
+                }
             }
             methods+=methodAnnotes;
             methodParameters="";
@@ -253,9 +258,18 @@ public class Language {
             if(methodParameters.isEmpty()==false){
                 methodParameters=methodParameters.substring(0, methodParameters.length()-1);
             }
-            methods+=HandyManUtils.getFileContent(Constantes.DATA_PATH+"/"+m.getControllerMethodContent()+"."+Constantes.CONTROLLER_TEMPLATE_EXT);
-            methods=methods.replace("[returnType]", entity.getClassName());
-            methods=methods.replace("[controllerMethodParameter]", methodParameters);
+
+            if(!m.getControllerMethodContent().equalsIgnoreCase("spring/controller/springControllerUserAuth")){
+                methods+=HandyManUtils.getFileContent(Constantes.DATA_PATH+"/"+m.getControllerMethodContent()+"."+Constantes.CONTROLLER_TEMPLATE_EXT);
+                methods=methods.replace("[returnType]", entity.getClassName());
+                methods=methods.replace("[controllerMethodParameter]", methodParameters);
+            }
+            if(m.getControllerMethodContent().equalsIgnoreCase("spring/controller/springControllerUserAuth") && entity.getTableName().equals(nameUserTable)){
+                methods+=HandyManUtils.getFileContent(Constantes.DATA_PATH+"/"+m.getControllerMethodContent()+"."+Constantes.CONTROLLER_TEMPLATE_EXT);
+                methods=methods.replace("[returnType]", entity.getClassName());
+                methods=methods.replace("[controllerMethodParameter]", methodParameters);
+            }
+            
             changeInstanciation="";
             foreignList="";
             foreignInclude="";

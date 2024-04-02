@@ -63,7 +63,9 @@
             ],
             "modelExtension":"java",
             "modelPackage":"com.[projectNameMin].entities",
-            "modelTemplate":"ModelTemplate"
+            "modelTemplate":"ModelTemplate",
+            "anotationUser":"@Query(\"SELECT u FROM [classNameMaj] u WHERE u.email = :email AND u.mdp = :mdp\")",
+            "fonctionLogin":"Optional<[classNameMaj]> findUserByEmailAndMdp(@Param(\"email\") String email, @Param(\"mdp\") String mdp);"
         },
         "controller":{
             "controllerImports":[

@@ -18,6 +18,22 @@ public class Model {
     private String modelExtension;
     private String modelPackage;
     private String modelTemplate;
+    private String anotationUser;
+    private String fonctionLogin;
+    
+
+    public String getFonctionLogin() {
+        return fonctionLogin;
+    }
+    public void setFonctionLogin(String fonctionLogin) {
+        this.fonctionLogin = fonctionLogin;
+    }
+    public String getAnotationUser() {
+        return anotationUser;
+    }
+    public void setAnotationUser(String anotationUser) {
+        this.anotationUser = anotationUser;
+    }
     public String getModelTemplate() {
         return modelTemplate;
     }
