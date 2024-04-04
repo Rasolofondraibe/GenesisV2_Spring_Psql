@@ -144,7 +144,7 @@
                         "@GetMapping(\"/tocrudPagination[classNameMin].do\")"
                     ],
                     "controllerMethodParameter":"",
-                    "controllerMethodContent":"spring/controller/springControllerFindById"
+                    "controllerMethodContent":"spring/controller/springControllerReadPagination"
                 },
                 {
                     "controllerMethodAnnotations":[
