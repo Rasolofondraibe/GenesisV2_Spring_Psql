@@ -555,7 +555,7 @@ public class Entity {
 
     public String pathRoute(){
         String name =this.getTableName().substring(0, 1).toUpperCase()+this.getTableName().substring(1);
-        String reponse = "{'path':\""+this.getTableName()+"\",component:"+name+"Component}, \n";
+        String reponse = "{'path':\""+this.getTableName()+"\",component:"+name+"Component,canActivate:[authGuard]}, \n";
         return reponse;
     }
 

@@ -21,6 +21,10 @@ export class [GnomClasse]Component {
   [nomClasse] !: [GnomClasse]Model;
   [attributForeign]
 
+  page : number = 0;
+  size : number = 10;
+  nombrePage !: Array<number>;
+
   constructor(private formBuilder: FormBuilder, private [nomClasse]Service: [GnomClasse]Service,private router:Router[constructorForeign]) {
     this.[nomClasse]Form = this.formBuilder.group({
       [validator]

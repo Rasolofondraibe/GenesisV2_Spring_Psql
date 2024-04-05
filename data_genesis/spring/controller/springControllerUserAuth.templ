@@ -2,7 +2,7 @@ public ResponseEntity<Integer> authenticateUser(@RequestParam String login,@Requ
     Optional<[classNameMaj]> u=repo.findUserByEmailAndMdp(login, pwd);
     if(u.isPresent()){
         [classNameMaj] o=u.get();
-        Integer id = o.getId[classNameMaj]();
+        Integer id = o.get[primaryNameMaj]();
         return ResponseEntity.ok(id);
     }
     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);

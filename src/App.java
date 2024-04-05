@@ -230,6 +230,7 @@ public class App {
                     }
                     j++;
                 }
+                pathRoute = pathRoute + "{'path':\"login\",component:LoginComponent}, \n";
 
                 Path chemin = Paths.get("data_genesis/vue/route/app.routes.ts");
                 List<String> lines = Files.readAllLines(chemin);
