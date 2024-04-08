@@ -1,0 +1,47 @@
+import { Component } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
+import { [GnomClasse]Model } from '../model/[GnomClasse]Model';
+import { [GnomClasse]Service } from '../service/[GnomClasse]Service';
+import { CommonModule } from '@angular/common';
+
+@Component({
+  selector: 'app-header',
+  standalone: true,
+  imports: [RouterLink,CommonModule],
+  templateUrl: './header.component.html',
+  styleUrl: './header.component.css'
+})
+export class HeaderComponent {
+    utilisateur!:[GnomClasse]Model;
+
+    constructor(private [nomClasse]Service:[GnomClasse]Service,private router:Router){
+
+    }
+
+    ngOnInit() {
+      this.findUtilisateur();
+    }
+
+    findUtilisateur(){
+      const id = localStorage.getItem('token');
+      if(id !== null){
+        this.[nomClasse]Service.findById(parseInt(id)).subscribe({
+          next: (response) => {
+            console.log('Create successful:', response); 
+            this.utilisateur = response;
+          },
+          error: (error) => {
+            console.error('Error:', error); 
+          }
+        });
+      }else {
+        this.router.navigate(['login']);
+      }
+    }
+
+    logOut(){
+        localStorage.removeItem('token');
+        this.router.navigate(['login']);
+    }
+
+}

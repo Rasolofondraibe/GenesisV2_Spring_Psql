@@ -1,0 +1,39 @@
+import { Component } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { AdministrateurService } from '../service/[GnomClasse]Service';
+
+@Component({
+  selector: 'app-sign-in',
+  standalone: true,
+  imports: [ReactiveFormsModule],
+  templateUrl: './sign-in.component.html',
+  styleUrl: './sign-in.component.css'
+})
+export class SignInComponent {
+    [nomClasse]Form!: FormGroup;
+
+    constructor(private formBuilder: FormBuilder,private [nomClasse]Service:[GnomClasse]Service,private router:Router){
+      this.[nomClasse]Form = this.formBuilder.group({
+        [validator]
+      });
+    }
+
+    createUser(){
+      if(this.[nomClasse]Form.valid){
+        [dataDeclaration]
+        this.[nomClasse]Service.create([dataDeclarationArgument]).subscribe({
+          next: (response) => {
+            console.log('Create successful:', response); // Affichez la réponse renvoyée par la méthode create
+            localStorage.setItem('token', response.[id].toString());
+            this.router.navigateByUrl(``);
+          },
+          error: (error) => {
+            console.error('Error:', error); // Affichez les éventuelles erreurs
+          }
+        });
+      }else{
+        this.router.navigateByUrl(`/signIn`);
+      }
+    }
+}
