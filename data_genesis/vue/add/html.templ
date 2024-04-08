@@ -30,7 +30,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let [nomClasse] of liste[GnomClasse] | async">
+      <tr *ngFor="let [nomClasse] of liste[GnomClasse]">
         [body]
         <td><button type="button" class="btn btn-primary" (click)="delete[GnomClasse]([nomClasse].[id])">Delete</button></td>
         <td><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#updateModal"  (click)="versUpdate([nomClasse])">

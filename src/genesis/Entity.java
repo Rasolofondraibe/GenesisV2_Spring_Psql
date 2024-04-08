@@ -163,7 +163,19 @@ public class Entity {
         this.dupliquerFichier(fichierRoute, "app.routes.ts");
 
         String fichierNav = "data_genesis/vue/nav/nav.templ";
-        this.dupliquerFichier(fichierNav, "index.html");
+        this.dupliquerFichier(fichierNav, "header.component.html");
+
+        String fichierAuthService = "data_genesis/vue/authService/authService.templ";
+        this.dupliquerFichier(fichierAuthService, "authService.ts");
+
+        String fichierSign = "data_genesis/vue/authentification/sign-in.templ";
+        this.dupliquerFichier(fichierSign, "sign-in.component.ts");
+
+        String fichierSignHtml = "data_genesis/vue/authentification/sign-inHtml.templ";
+        this.dupliquerFichier(fichierSignHtml, "sign-in.component.html");
+
+        String fichierHeaderComponent = "data_genesis/vue/nav/headerComponent.templ";
+        this.dupliquerFichier(fichierHeaderComponent, "header.component.ts");
     }
 
     
@@ -222,7 +234,9 @@ public class Entity {
         EntityColumn[] liste_colonne = this.getColumns();
         String reponse = "";
         for (EntityColumn entityField : liste_colonne) {
-            reponse = reponse + "const "+entityField.getName()+" = this."+this.getTableName()+"Form.get('"+entityField.getName()+"')?.value; \n";
+            if(!entityField.isPrimary()){
+                reponse = reponse + "const "+entityField.getName()+" = this."+this.getTableName()+"Form.get('"+entityField.getName()+"')?.value; \n";
+            }
         }
         return reponse;
     }
@@ -579,5 +593,50 @@ public class Entity {
         this.remplaceFichierAdd(nomProjet,entities);
         this.remplacerFichierModele(nomProjet,entities);
         this.remplacerFichierService(nomProjet);
+    }
+
+
+    public void remplacerFichierSign(String nomProjet,Entity[] entities) throws IOException{
+        Path chemin = Paths.get("data_genesis/vue/authentification/sign-in.component.ts");
+        List<String> lines = Files.readAllLines(chemin);
+        for(int i=0;i<lines.size();i++){
+            String ligne = lines.get(i);
+            ligne = ligne.replace("[nomClasse]", this.getTableName());
+            ligne = ligne.replace("[GnomClasse]", this.getTableName().substring(0, 1).toUpperCase()+this.getTableName().substring(1));
+            ligne = ligne.replace("[id]", this.getPrimaryField().getName());
+            ligne = ligne.replace("[dataDeclaration]", this.dataDeclaration());
+            ligne = ligne.replace("[dataDeclarationArgument]", this.dataDeclarationArgument());
+            ligne = ligne.replace("[validator]", this.validator());
+            lines.set(i, ligne+"");
+        }
+        Files.write(chemin, lines, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
+        Path cheminDossierDestinationComponent = Paths.get(nomProjet+"/src/app/sign-in");
+        Files.move(chemin, cheminDossierDestinationComponent.resolve(chemin.getFileName()));
+
+        Path cheminHtml = Paths.get("data_genesis/vue/authentification/sign-in.component.html");
+        List<String> linesHtml = Files.readAllLines(cheminHtml);
+        for(int i=0;i<linesHtml.size();i++){
+            String ligne = linesHtml.get(i);
+            ligne = ligne.replace("[input]", this.constructInput(entities));
+            ligne = ligne.replace("[nomClasse]", this.getTableName());
+            linesHtml.set(i, ligne+"");
+        }
+        Files.write(cheminHtml, linesHtml, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
+        Path cheminDossierDestinationHtml = Paths.get(nomProjet+"/src/app/sign-in");
+        Files.move(cheminHtml, cheminDossierDestinationHtml.resolve(cheminHtml.getFileName()));
+    }
+
+    public void remplacerFichierHeaderComponent(String nomProjet) throws IOException{
+        Path chemin = Paths.get("data_genesis/vue/nav/header.component.ts");
+        List<String> lines = Files.readAllLines(chemin);
+        for(int i=0;i<lines.size();i++){
+            String ligne = lines.get(i);
+            ligne = ligne.replace("[nomClasse]", this.getTableName());
+            ligne = ligne.replace("[GnomClasse]", this.getTableName().substring(0, 1).toUpperCase()+this.getTableName().substring(1));
+            lines.set(i, ligne+"");
+        }
+        Files.write(chemin, lines, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
+        Path cheminDossierDestinationComponent = Paths.get(nomProjet+"/src/app/header");
+        Files.move(chemin, cheminDossierDestinationComponent.resolve(chemin.getFileName()));
     }
 }

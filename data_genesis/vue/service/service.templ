@@ -37,9 +37,8 @@ export class [GnomClasse]Service{
         return this.http.post(`${this.baseUrl}/delete[nomClasse].do?[id]=${[id]}`,null);
     }
 
-    findById(id: number): Observable<[GnomClasse]Model | undefined> {
-        return this.getAll().pipe(
-          map(([nomClasse]s: [GnomClasse]Model[]) => [nomClasse]s.find([nomClasse] => [nomClasse].[id] === id))
-        );
+    findById(id: number): Observable<any> {
+        const url = `http://localhost:8080/findById[nomClasse].do?id=${id}`;
+        return this.http.post(url, null);
     }
 }

@@ -1,0 +1,15 @@
+<div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+    <div>
+      <h2 class="text-center">Sign in</h2>
+      <form [formGroup]="[nomClasse]Form" (ngSubmit)="createUser()">
+        [input]
+        <div class="mb-3 form-check">
+          <input type="checkbox" class="form-check-input" id="exampleCheck1">
+          <label class="form-check-label" for="exampleCheck1">Check me out</label>
+          <a routerLink="/logIn">Log in</a>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+    </div>
+  </div>
+  

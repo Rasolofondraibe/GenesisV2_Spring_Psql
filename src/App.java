@@ -46,6 +46,7 @@ public class App {
         String customChanges, changesFile;
         String navLink, navLinkPath;
         String tableUserName;
+        Entity entityUser = null;
         try(Scanner scanner=new Scanner(System.in)){
             System.out.println("Choose a database engine:");
             for(int i=0;i<databases.length;i++){
@@ -111,6 +112,9 @@ public class App {
                         entities[i].setIsUser(true);
                     }
                     entities[i].initialize(connect, credentials, database, language,viewConfig[0]);
+                    if(entities[i].getTableName().equals(tableUserName)){
+                        entityUser = entities[i];
+                    }
                 }
                 models=new String[entities.length];
                 controllers=new String[entities.length];
@@ -221,16 +225,16 @@ public class App {
                     importRoute = importRoute + entity.importRoute();
                     if(j!=0){
                         pathRoute = pathRoute + entity.pathRoute();
-                        lien = lien + "<li><a class=\"dropdown-item\" href=\"/"+entity.getTableName()+"\">"+entity.getTableName()+"</a></li> \n";
+                        lien = lien + "<li><a class=\"dropdown-item\" routerLink=\"/"+entity.getTableName()+"\">"+entity.getTableName()+"</a></li> \n";
 
                     }else{
                         String name =entity.getTableName().substring(0, 1).toUpperCase()+entity.getTableName().substring(1);
-                        pathRoute = pathRoute + "{'path':\"\",component:"+name+"Component}, \n";
-                        lien = lien + "<li><a class=\"dropdown-item\" href=\"\">"+entity.getTableName()+"</a></li> \n";
+                        pathRoute = pathRoute + "{'path':\"\",component:"+name+"Component,canActivate:[authGuard]}, \n";
+                        lien = lien + "<li><a class=\"dropdown-item\" routerLink=\"\">"+entity.getTableName()+"</a></li> \n";
                     }
                     j++;
                 }
-                pathRoute = pathRoute + "{'path':\"login\",component:LoginComponent}, \n";
+                pathRoute = pathRoute + "{'path':\"login\",component:LoginComponent}, \n {'path':\"signIn\",component:SignInComponent}, \n";
 
                 Path chemin = Paths.get("data_genesis/vue/route/app.routes.ts");
                 List<String> lines = Files.readAllLines(chemin);
@@ -245,7 +249,7 @@ public class App {
                 Files.move(chemin, cheminDossierDestinationComponent.resolve(chemin.getFileName()), StandardCopyOption.REPLACE_EXISTING);
 
 
-                Path cheminNav = Paths.get("data_genesis/vue/nav/index.html");
+                Path cheminNav = Paths.get("data_genesis/vue/nav/header.component.html");
                 List<String> linesNav = Files.readAllLines(cheminNav);
                 for(int i=0;i<linesNav.size();i++){
                     String ligne = linesNav.get(i);
@@ -254,9 +258,23 @@ public class App {
                     linesNav.set(i, ligne+"");
                 }
                 Files.write(cheminNav, linesNav, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
-                Path cheminDossierDestinationNav = Paths.get(nom_projet_vue+"/src");
+                Path cheminDossierDestinationNav = Paths.get(nom_projet_vue+"/src/app/header");
                 Files.move(cheminNav, cheminDossierDestinationNav.resolve(cheminNav.getFileName()), StandardCopyOption.REPLACE_EXISTING);
 
+
+                Path cheminAuthService = Paths.get("data_genesis/vue/authService/authService.ts");
+                List<String> linesAuthService = Files.readAllLines(cheminAuthService);
+                for(int i=0;i<linesAuthService.size();i++){
+                    String ligne = linesAuthService.get(i);
+                    ligne = ligne.replace("[nomClasse]", Character.toLowerCase(tableUserName.charAt(0)) + tableUserName.substring(1));
+                    linesAuthService.set(i, ligne+"");
+                }
+                Files.write(cheminAuthService, linesAuthService, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
+                Path cheminDossierDestinationAuthServuice = Paths.get(nom_projet_vue+"/src/app");
+                Files.move(cheminAuthService, cheminDossierDestinationAuthServuice.resolve(cheminAuthService.getFileName()), StandardCopyOption.REPLACE_EXISTING);
+            
+                entityUser.remplacerFichierSign(nom_projet_vue,entities);
+                entityUser.remplacerFichierHeaderComponent(nom_projet_vue);
             }
     }
 }
