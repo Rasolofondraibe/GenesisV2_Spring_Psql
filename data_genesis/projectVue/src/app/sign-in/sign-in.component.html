@@ -1,8 +1,16 @@
 <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
     <div>
       <h2 class="text-center">Sign in</h2>
-      <form [formGroup]="[nomClasse]Form" (ngSubmit)="createUser()">
-        [input]
+      <form [formGroup]="usersForm" (ngSubmit)="createUser()">
+        <div class="mb-3">
+    <label for="email" class="form-label">email</label>
+    <input type="text" class="form-control" id="email" formControlName="email">
+  </div> 
+<div class="mb-3">
+    <label for="mdp" class="form-label">mdp</label>
+    <input type="password" class="form-control" id="mdp" formControlName="mdp">
+  </div> 
+
         <div class="mb-3 form-check">
           <input type="checkbox" class="form-check-input" id="exampleCheck1">
           <label class="form-check-label" for="exampleCheck1">Check me out</label>

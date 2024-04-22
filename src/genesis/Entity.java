@@ -171,9 +171,6 @@ public class Entity {
         String fichierSign = "data_genesis/vue/authentification/sign-in.templ";
         this.dupliquerFichier(fichierSign, "sign-in.component.ts");
 
-        String fichierSignHtml = "data_genesis/vue/authentification/sign-inHtml.templ";
-        this.dupliquerFichier(fichierSignHtml, "sign-in.component.html");
-
         String fichierHeaderComponent = "data_genesis/vue/nav/headerComponent.templ";
         this.dupliquerFichier(fichierHeaderComponent, "header.component.ts");
     }
@@ -319,7 +316,7 @@ public class Entity {
         String tete = "";
         EntityField[] liste_colonne = this.getFields();
         for (EntityField entityColumn : liste_colonne) {
-            if(!entityColumn.isPrimary())
+            if(!entityColumn.isPrimary() && !entityColumn.getName().equals("mdp"))
             {
                 tete = tete + "<th scope=\"col\">"+entityColumn.getName()+"</th> \n";
             }
@@ -333,7 +330,7 @@ public class Entity {
         EntityField[] liste_colonne = this.getFields();
 
         for (EntityField entityColumn : liste_colonne) {
-            if(!entityColumn.isPrimary() && !entityColumn.isForeign())
+            if(!entityColumn.isPrimary() && !entityColumn.isForeign() && !entityColumn.getName().equals("mdp"))
             {
                 body = body + "<td>{{ "+this.getTableName()+"."+entityColumn.getName()+" }}</td> \n";
             }else if(entityColumn.isForeign()){
@@ -612,18 +609,6 @@ public class Entity {
         Files.write(chemin, lines, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
         Path cheminDossierDestinationComponent = Paths.get(nomProjet+"/src/app/sign-in");
         Files.move(chemin, cheminDossierDestinationComponent.resolve(chemin.getFileName()));
-
-        Path cheminHtml = Paths.get("data_genesis/vue/authentification/sign-in.component.html");
-        List<String> linesHtml = Files.readAllLines(cheminHtml);
-        for(int i=0;i<linesHtml.size();i++){
-            String ligne = linesHtml.get(i);
-            ligne = ligne.replace("[input]", this.constructInput(entities));
-            ligne = ligne.replace("[nomClasse]", this.getTableName());
-            linesHtml.set(i, ligne+"");
-        }
-        Files.write(cheminHtml, linesHtml, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
-        Path cheminDossierDestinationHtml = Paths.get(nomProjet+"/src/app/sign-in");
-        Files.move(cheminHtml, cheminDossierDestinationHtml.resolve(cheminHtml.getFileName()));
     }
 
     public void remplacerFichierHeaderComponent(String nomProjet) throws IOException{
